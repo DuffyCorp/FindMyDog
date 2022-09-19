@@ -1,0 +1,10 @@
+Beagle
+Boxer
+Chihuahua
+Dalmation
+German Shepard
+Great Dane
+Greyhound
+Labrador Retriever
+Miniature Schnauzer
+Pomeranian
