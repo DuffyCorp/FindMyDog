@@ -1,7 +1,11 @@
+// ignore_for_file: unnecessary_brace_in_string_interps
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/screens/chat_screen.dart';
+import 'package:instagram_clone/widgets/message_subtitle.dart';
 
 import '../utils/colors.dart';
 
@@ -15,10 +19,21 @@ class MessagesScreen extends StatefulWidget {
 
 class _MessagesScreenState extends State<MessagesScreen> {
   var userData = {};
+  String subtitle = "";
+  String message = "";
 
   @override
   void initState() {
     super.initState();
+  }
+
+  String chatroomId(String user1, String user2) {
+    if (user1[0].toLowerCase().codeUnits[0] >
+        user2.toLowerCase()[0].codeUnits[0]) {
+      return "$user1$user2";
+    } else {
+      return "$user2$user1";
+    }
   }
 
   @override
@@ -49,6 +64,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 'uid',
                 isNotEqualTo: FirebaseAuth.instance.currentUser!.uid,
               )
+              .orderBy('uid', descending: true)
               .get(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -90,6 +106,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     ),
                     title: Text(
                       (snapshot.data! as dynamic).docs[index]['username'],
+                    ),
+                    subtitle: MessageSubtitle(
+                      uid: (snapshot.data! as dynamic).docs[index]['uid'],
                     ),
                   ),
                 );
