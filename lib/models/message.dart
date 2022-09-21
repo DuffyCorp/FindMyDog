@@ -9,6 +9,7 @@ class Message {
   final String profImage;
   final String message;
   final String type;
+  final bool read;
 
   const Message({
     required this.uid,
@@ -17,6 +18,7 @@ class Message {
     required this.profImage,
     required this.message,
     required this.type,
+    required this.read,
   });
 
   //Converts user model to Json format
@@ -27,6 +29,7 @@ class Message {
         "profImage": profImage,
         "message": message,
         "type": type,
+        "read": read,
       };
 
   //gets all user details from a snapshot
@@ -42,6 +45,7 @@ class Message {
       profImage: snapshot['profImage'],
       message: snapshot['message'],
       type: snapshot['type'],
+      read: snapshot['read'],
     );
   }
 }

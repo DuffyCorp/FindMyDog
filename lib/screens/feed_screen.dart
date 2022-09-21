@@ -75,18 +75,91 @@ class _FeedScreenState extends State<FeedScreen>
               centerTitle: false,
               title: const Text('Find My Dog'),
               actions: [
-                IconButton(
-                  onPressed: () {
-                    widget.controller.animateToPage(
-                      1,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeIn,
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.messenger_outline,
+                Container(
+                  margin: const EdgeInsets.only(top: 5),
+                  child: StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      return GestureDetector(
+                        onTap: () {},
+                        child: Stack(
+                          children: <Widget>[
+                            IconButton(
+                              onPressed: () {
+                                widget.controller.animateToPage(
+                                  1,
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.easeIn,
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.messenger_outline,
+                              ),
+                            ),
+                            snapshot.connectionState == ConnectionState.waiting
+                                ? IconButton(
+                                    onPressed: () {
+                                      widget.controller.animateToPage(
+                                        1,
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        curve: Curves.easeIn,
+                                      );
+                                    },
+                                    icon: const Icon(
+                                      Icons.messenger_outline,
+                                    ),
+                                  )
+                                : snapshot.data!['messagesNotification'] == 0
+                                    ? Container()
+                                    : Positioned(
+                                        child: Stack(
+                                          children: <Widget>[
+                                            const Icon(
+                                              Icons.brightness_1,
+                                              size: 20.0,
+                                              color: accentColor,
+                                            ),
+                                            Positioned(
+                                              top: 3.0,
+                                              right: 4.0,
+                                              child: Center(
+                                                child: Text(
+                                                  snapshot.data![
+                                                          'messagesNotification']
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 11.0,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
+                // IconButton(
+                //   onPressed: () {
+                //     widget.controller.animateToPage(
+                //       1,
+                //       duration: const Duration(milliseconds: 200),
+                //       curve: Curves.easeIn,
+                //     );
+                //   },
+                //   icon: const Icon(
+                //     Icons.messenger_outline,
+                //   ),
+                // ),
               ],
             ),
       body: _currentLocation == null

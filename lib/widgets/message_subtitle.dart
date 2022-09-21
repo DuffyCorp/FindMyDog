@@ -50,6 +50,15 @@ class _MessageSubtitleState extends State<MessageSubtitle> {
               : message = "Sent a Photo";
           return Text(
             "${subtitle}: ${message}",
+            style: (snapshot.data! as dynamic).docs[0]['uid'] !=
+                    FirebaseAuth.instance.currentUser!.uid
+                ? (snapshot.data! as dynamic).docs[0]['read'] == false
+                    ? const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      )
+                    : const TextStyle()
+                : const TextStyle(),
           );
         } else {
           return const Text("Start messaging");

@@ -243,24 +243,6 @@ class FirestoreMethods {
 
         String chatRoom = chatroomId(myUid, targetUid);
 
-        //create Comment
-        Message newMessage = Message(
-          profImage: myProfilePic,
-          username: myName,
-          uid: myUid,
-          message: message,
-          createdAt: DateTime.now(),
-          type: "text",
-        );
-
-        final refMessages = _firestore.collection('chats/$chatRoom/messages');
-
-        await refMessages.add(
-          newMessage.toJson(),
-        );
-
-        final refUsers = FirebaseFirestore.instance.collection('users');
-
         //get user data from firebase
         var userSnap = await FirebaseFirestore.instance
             .collection('users')
@@ -269,6 +251,48 @@ class FirestoreMethods {
 
         //store user data
         var userData = userSnap.data()!;
+
+        //get user data from firebase
+        var mySnap = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get();
+
+        //store user data
+        var myData = mySnap.data()!;
+
+        //create Comment
+        Message newMessage = Message(
+          profImage: myProfilePic,
+          username: myName,
+          uid: myUid,
+          message: message,
+          createdAt: DateTime.now(),
+          type: "text",
+          read: false,
+        );
+
+        final refMessages = _firestore.collection('chats/$chatRoom/messages');
+
+        await refMessages.add(
+          newMessage.toJson(),
+        );
+
+        if (myData['messagesNotification'] < 0) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(targetUid)
+              .update(
+            {"messagesNotification": 0},
+          );
+        }
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(targetUid)
+            .update(
+          {"messagesNotification": FieldValue.increment(1)},
+        );
 
         print('testing notifications');
         print('target token is $token');
@@ -345,21 +369,6 @@ class FirestoreMethods {
 
         String chatRoom = chatroomId(myUid, targetUid);
 
-        String photoUrl =
-            await StorageMethods().uploadImageToStorage('posts', file, true);
-
-        //create Comment
-        Message newMessage = Message(
-          profImage: myProfilePic,
-          username: myName,
-          uid: myUid,
-          message: photoUrl,
-          createdAt: DateTime.now(),
-          type: "img",
-        );
-
-        final refMessages = _firestore.collection('chats/$chatRoom/messages');
-
         //get user data from firebase
         var userSnap = await FirebaseFirestore.instance
             .collection('users')
@@ -369,13 +378,50 @@ class FirestoreMethods {
         //store user data
         var userData = userSnap.data()!;
 
+        //get current data from firebase
+        var mySnap = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get();
+
+        //store user data
+        var myData = mySnap.data()!;
+
+        String photoUrl =
+            await StorageMethods().uploadImageToStorage('posts', file, true);
+
+        //create Comment
+        Message newMessage = Message(
+            profImage: myProfilePic,
+            username: myName,
+            uid: myUid,
+            message: photoUrl,
+            createdAt: DateTime.now(),
+            type: "img",
+            read: false);
+
+        final refMessages = _firestore.collection('chats/$chatRoom/messages');
+
         await refMessages.add(
           newMessage.toJson(),
         );
 
-        final refUsers = FirebaseFirestore.instance.collection('users');
-        print('testing notifications');
-        print('target token is $token');
+        if (myData['messagesNotification'] < 0) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(targetUid)
+              .update(
+            {"messagesNotification": 0},
+          );
+        }
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(targetUid)
+            .update(
+          {"messagesNotification": FieldValue.increment(1)},
+        );
+
         if (token != 'unavailable') {
           if (userData['status'] == "offline") {
             var data = {

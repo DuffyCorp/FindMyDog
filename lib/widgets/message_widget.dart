@@ -8,10 +8,14 @@ import 'package:intl/intl.dart';
 class MessageWidget extends StatefulWidget {
   final DocumentSnapshot message;
   final bool isMe;
+  final int index;
+  final bool hideProf;
   const MessageWidget({
     Key? key,
     required this.message,
     required this.isMe,
+    required this.index,
+    this.hideProf = false,
   }) : super(key: key);
 
   @override
@@ -33,47 +37,74 @@ class _MessageWidgetState extends State<MessageWidget> {
                 widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
               if (!widget.isMe)
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProfileScreen(
-                          uid: widget.message["uid"].toString(),
+                widget.hideProf
+                    ? Container(
+                        width: 32,
+                      )
+                    : InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProfileScreen(
+                                uid: widget.message["uid"].toString(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(
+                              widget.message["profImage"].toString()),
                         ),
                       ),
-                    );
-                  },
-                  child: CircleAvatar(
-                    radius: 16,
-                    backgroundImage:
-                        NetworkImage(widget.message["profImage"].toString()),
-                  ),
-                ),
               Column(
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    margin: const EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                      top: 16,
-                    ),
-                    constraints: const BoxConstraints(maxWidth: 140),
-                    decoration: BoxDecoration(
-                      color: widget.isMe ? Colors.grey[100] : accentColor,
-                      borderRadius: widget.isMe
-                          ? borderRadius
-                              .subtract(BorderRadius.only(bottomRight: radius))
-                          : borderRadius
-                              .subtract(BorderRadius.only(bottomLeft: radius)),
-                    ),
-                    child: buildMessage(),
+                  Stack(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        margin: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 16,
+                        ),
+                        constraints: const BoxConstraints(maxWidth: 140),
+                        decoration: BoxDecoration(
+                          color: widget.isMe ? Colors.grey[100] : accentColor,
+                          borderRadius: widget.isMe
+                              ? borderRadius.subtract(
+                                  const BorderRadius.only(bottomRight: radius))
+                              : borderRadius.subtract(
+                                  const BorderRadius.only(bottomLeft: radius)),
+                        ),
+                        child: buildMessage(),
+                      ),
+                      widget.index == 0
+                          ? widget.isMe
+                              ? Positioned(
+                                  bottom: -3,
+                                  left: -1,
+                                  child: Icon(
+                                    widget.message["read"] == false
+                                        ? Icons.check
+                                        : Icons.remove_red_eye,
+                                    size: 15,
+                                  ),
+                                )
+                              : Container()
+                          : Container(),
+                    ],
                   ),
-                  Text(
-                    DateFormat.yMMMd().format(
-                      widget.message["createdAt"].toDate(),
-                    ),
-                  ),
+                  widget.hideProf
+                      ? Container()
+                      : Text(
+                          DateFormat('HH:mm').format(
+                            widget.message["createdAt"].toDate(),
+                          ),
+                        ),
                 ],
               ),
             ],
@@ -106,7 +137,6 @@ class _MessageWidgetState extends State<MessageWidget> {
               Column(
                 children: [
                   Container(
-                    height: 200,
                     width: 200,
                     alignment: widget.isMe
                         ? Alignment.centerRight
@@ -121,7 +151,6 @@ class _MessageWidgetState extends State<MessageWidget> {
                         );
                       },
                       child: Container(
-                        height: 200,
                         width: 200,
                         alignment: Alignment.center,
                         child: widget.message['message'] != ""
@@ -133,7 +162,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                     ),
                   ),
                   Text(
-                    DateFormat.yMMMd().format(
+                    DateFormat('HH:MM').format(
                       widget.message["createdAt"].toDate(),
                     ),
                   ),
