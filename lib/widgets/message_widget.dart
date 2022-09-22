@@ -57,55 +57,73 @@ class _MessageWidgetState extends State<MessageWidget> {
                               widget.message["profImage"].toString()),
                         ),
                       ),
-              Column(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        margin: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          top: 16,
-                        ),
-                        constraints: const BoxConstraints(maxWidth: 140),
-                        decoration: BoxDecoration(
-                          color: widget.isMe ? Colors.grey[100] : accentColor,
-                          borderRadius: widget.isMe
-                              ? borderRadius.subtract(
-                                  const BorderRadius.only(bottomRight: radius))
-                              : borderRadius.subtract(
-                                  const BorderRadius.only(bottomLeft: radius)),
-                        ),
-                        child: buildMessage(),
+              Container(
+                margin: widget.hideProf
+                    ? const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        //top: 5,
+                        bottom: 3,
+                      )
+                    : const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: 16,
+                        //top: 16,
                       ),
-                      widget.index == 0
-                          ? widget.isMe
-                              ? Positioned(
-                                  bottom: -3,
-                                  left: -1,
-                                  child: Icon(
-                                    widget.message["read"] == false
-                                        ? Icons.check
-                                        : Icons.remove_red_eye,
-                                    size: 15,
-                                  ),
-                                )
-                              : Container()
-                          : Container(),
-                    ],
-                  ),
-                  widget.hideProf
-                      ? Container()
-                      : Text(
-                          DateFormat('HH:mm').format(
-                            widget.message["createdAt"].toDate(),
+                child: Column(
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
                           ),
+                          constraints: const BoxConstraints(maxWidth: 140),
+                          decoration: BoxDecoration(
+                            color: widget.isMe ? Colors.grey[100] : accentColor,
+                            borderRadius: widget.isMe
+                                ? borderRadius.subtract(
+                                    widget.hideProf
+                                        ? const BorderRadius.only()
+                                        : const BorderRadius.only(
+                                            bottomRight: radius),
+                                  )
+                                : borderRadius.subtract(
+                                    widget.hideProf
+                                        ? const BorderRadius.only()
+                                        : const BorderRadius.only(
+                                            bottomLeft: radius),
+                                  ),
+                          ),
+                          child: buildMessage(),
                         ),
-                ],
+                        widget.index == 0
+                            ? widget.isMe
+                                ? Positioned(
+                                    bottom: -3,
+                                    left: -1,
+                                    child: Icon(
+                                      widget.message["read"] == false
+                                          ? Icons.check
+                                          : Icons.remove_red_eye,
+                                      size: 15,
+                                    ),
+                                  )
+                                : Container()
+                            : Container(),
+                      ],
+                    ),
+                    widget.hideProf
+                        ? Container()
+                        : Text(
+                            DateFormat('HH:mm').format(
+                              widget.message["createdAt"].toDate(),
+                            ),
+                          ),
+                  ],
+                ),
               ),
             ],
           )
@@ -134,39 +152,54 @@ class _MessageWidgetState extends State<MessageWidget> {
                 Container(
                   width: 12,
                 ),
-              Column(
-                children: [
-                  Container(
-                    width: 200,
-                    alignment: widget.isMe
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                ShowImage(imageUrl: widget.message['message']),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 200,
-                        alignment: Alignment.center,
-                        child: widget.message['message'] != ""
-                            ? Image.network(widget.message['message'])
-                            : const CircularProgressIndicator(
-                                color: primaryColor,
-                              ),
+              Container(
+                margin: widget.hideProf
+                    ? const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        //top: 5,
+                        bottom: 3,
+                      )
+                    : const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: 16,
+                        //top: 16,
+                      ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 200,
+                      alignment: widget.isMe
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ShowImage(
+                                  imageUrl: widget.message['message']),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 200,
+                          alignment: Alignment.center,
+                          child: widget.message['message'] != ""
+                              ? Image.network(widget.message['message'])
+                              : const CircularProgressIndicator(
+                                  color: primaryColor,
+                                ),
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    DateFormat('HH:MM').format(
-                      widget.message["createdAt"].toDate(),
+                    Text(
+                      DateFormat('HH:MM').format(
+                        widget.message["createdAt"].toDate(),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           );

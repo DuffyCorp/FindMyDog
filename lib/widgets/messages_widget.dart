@@ -43,11 +43,11 @@ class _MessagesWidgetState extends State<MessagesWidget> {
     final DateTime messageDateTime = messageTimestamp.toDate();
     final DateTime preMessageDateTime = preMessageTimestamp.toDate();
 
-    final difference = preMessageDateTime.difference(messageDateTime).inMinutes;
+    final difference = preMessageDateTime.difference(messageDateTime).inSeconds;
     //print("The time difference is $difference");
     //Change difference number
     return (message['uid'] == previousMessage['uid'] &&
-        int.parse(difference.toString()) <= 5);
+        int.parse(difference.toString()) <= 150);
   }
 
   void readMessage() async {
@@ -170,15 +170,15 @@ class _MessagesWidgetState extends State<MessagesWidget> {
               if (indexDate == nextDate) {
                 //custom code
                 return MessageWidget(
-                    message: (snapshot.data! as dynamic).docs[index],
-                    isMe: (snapshot.data! as dynamic).docs[index]['uid'] ==
-                        FirebaseAuth.instance.currentUser!.uid,
-                    index: index,
-                    hideProf: index == 0
-                        ? (snapshot.data! as dynamic).docs[index]['uid'] !=
-                            (snapshot.data! as dynamic).docs[index + 1]['uid']
-                        : hideProfImage((snapshot.data! as dynamic).docs[index],
-                            (snapshot.data! as dynamic).docs[index - 1]));
+                  message: (snapshot.data! as dynamic).docs[index],
+                  isMe: (snapshot.data! as dynamic).docs[index]['uid'] ==
+                      FirebaseAuth.instance.currentUser!.uid,
+                  index: index,
+                  hideProf: index == 0
+                      ? false
+                      : hideProfImage((snapshot.data! as dynamic).docs[index],
+                          (snapshot.data! as dynamic).docs[index - 1]),
+                );
               } else {
                 date = (snapshot.data! as dynamic).docs[index]['createdAt'];
                 // custom code
@@ -198,13 +198,16 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                       ),
                     ),
                     MessageWidget(
-                        message: (snapshot.data! as dynamic).docs[index],
-                        isMe: (snapshot.data! as dynamic).docs[index]['uid'] ==
-                            FirebaseAuth.instance.currentUser!.uid,
-                        index: index,
-                        hideProf: hideProfImage(
-                            (snapshot.data! as dynamic).docs[index],
-                            (snapshot.data! as dynamic).docs[index - 1])),
+                      message: (snapshot.data! as dynamic).docs[index],
+                      isMe: (snapshot.data! as dynamic).docs[index]['uid'] ==
+                          FirebaseAuth.instance.currentUser!.uid,
+                      index: index,
+                      hideProf: index == 0
+                          ? false
+                          : hideProfImage(
+                              (snapshot.data! as dynamic).docs[index],
+                              (snapshot.data! as dynamic).docs[index - 1]),
+                    ),
                   ],
                 );
               }
