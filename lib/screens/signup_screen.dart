@@ -108,12 +108,15 @@ class _SignupScreenState extends State<SignupScreen> {
               flex: 2,
             ),
 
-            //Svg image
-            SvgPicture.asset(
-              'assets/images/instagram.svg',
-              color: primaryColor,
-              height: 64,
-            ),
+            // //Svg image
+            // SvgPicture.asset(
+            //   'assets/images/instagram.svg',
+            //   color: primaryColor,
+            //   height: 64,
+            // ),
+
+            const Text("Find My Dog"),
+
             const SizedBox(height: 64),
 
             // circular widget to accept and show our selected file

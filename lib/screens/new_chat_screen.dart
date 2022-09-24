@@ -104,6 +104,8 @@ class _NewChatState extends State<NewChat> {
                 }
 
                 return ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  shrinkWrap: true,
                   itemCount: (snapshot.data! as dynamic).docs.length,
                   itemBuilder: (context, index) {
                     return InkWell(
@@ -145,17 +147,21 @@ class _NewChatState extends State<NewChat> {
               ? const Center(
                   child: CircularProgressIndicator(color: Colors.white),
                 )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: followList.length,
-                  itemBuilder: (context, index) {
-                    var followersItem =
-                        followList[index].data()! as Map<String, dynamic>;
+              : Column(children: [
+                  const Text("Following"),
+                  ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: followList.length,
+                    itemBuilder: (context, index) {
+                      var followersItem =
+                          followList[index].data()! as Map<String, dynamic>;
 
-                    return followersTile(followersItem["photoUrl"],
-                        followersItem["uid"], followersItem["username"]);
-                  },
-                ),
+                      return followersTile(followersItem["photoUrl"],
+                          followersItem["uid"], followersItem["username"]);
+                    },
+                  ),
+                ]),
     );
   }
 

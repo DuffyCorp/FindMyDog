@@ -86,12 +86,13 @@ class _LoginScreenState extends State<LoginScreen> {
               flex: 2,
             ),
 
-            //Svg image
-            SvgPicture.asset(
-              'assets/images/instagram.svg',
-              color: primaryColor,
-              height: 64,
-            ),
+            // //Svg image
+            // SvgPicture.asset(
+            //   'assets/images/instagram.svg',
+            //   color: primaryColor,
+            //   height: 64,
+            // ),
+            const Text("Find My Dog"),
             const SizedBox(height: 64),
 
             //text field for email
