@@ -152,10 +152,12 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                       isMe: (snapshot.data! as dynamic).docs[index]['uid'] ==
                           FirebaseAuth.instance.currentUser!.uid,
                       index: index,
-                      hideProf: hideProfImage(
-                        (snapshot.data! as dynamic).docs[index],
-                        (snapshot.data! as dynamic).docs[index],
-                      ),
+                      hideProf: index == 0
+                          ? false
+                          : hideProfImage(
+                              (snapshot.data! as dynamic).docs[index],
+                              (snapshot.data! as dynamic).docs[index],
+                            ),
                     ),
                   ],
                 );

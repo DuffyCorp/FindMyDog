@@ -59,7 +59,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         actions: [
           IconButton(
             icon: const Icon(
-              Icons.messenger_outline,
+              Icons.add_box_outlined,
             ),
             onPressed: () {
               Navigator.of(context).push(

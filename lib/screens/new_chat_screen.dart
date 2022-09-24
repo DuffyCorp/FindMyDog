@@ -61,9 +61,11 @@ class _NewChatState extends State<NewChat> {
       followers.add(data);
     }
 
-    setState(() {
-      followList = followers;
-    });
+    setState(
+      () {
+        followList = followers;
+      },
+    );
   }
 
   @override
@@ -79,11 +81,13 @@ class _NewChatState extends State<NewChat> {
             labelText: 'Search for a user',
           ),
           onFieldSubmitted: (String _) {
-            setState(() {
-              isLoading = true;
-              isShowUsers = true;
-              isLoading = false;
-            });
+            setState(
+              () {
+                isLoading = true;
+                isShowUsers = true;
+                isLoading = false;
+              },
+            );
           },
         ),
       ),
@@ -108,37 +112,43 @@ class _NewChatState extends State<NewChat> {
                   shrinkWrap: true,
                   itemCount: (snapshot.data! as dynamic).docs.length,
                   itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () async {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChatScreen(
-                              uid: (snapshot.data! as dynamic).docs[index]
-                                  ['uid'],
+                    if ((snapshot.data! as dynamic).docs[index]['uid'] !=
+                        FirebaseAuth.instance.currentUser!.uid) {
+                      return InkWell(
+                        onTap: () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                uid: (snapshot.data! as dynamic).docs[index]
+                                    ['uid'],
+                              ),
+                            ),
+                          );
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                              .update(
+                            {
+                              "currentlyMessaging": (snapshot.data! as dynamic)
+                                  .docs[index]['uid'],
+                            },
+                          );
+                        },
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              (snapshot.data! as dynamic).docs[index]
+                                  ['photoUrl'],
                             ),
                           ),
-                        );
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .update(
-                          {
-                            "currentlyMessaging":
-                                (snapshot.data! as dynamic).docs[index]['uid'],
-                          },
-                        );
-                      },
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            (snapshot.data! as dynamic).docs[index]['photoUrl'],
+                          title: Text(
+                            (snapshot.data! as dynamic).docs[index]['username'],
                           ),
                         ),
-                        title: Text(
-                          (snapshot.data! as dynamic).docs[index]['username'],
-                        ),
-                      ),
-                    );
+                      );
+                    } else {
+                      return Column();
+                    }
                   },
                 );
               },
@@ -147,21 +157,23 @@ class _NewChatState extends State<NewChat> {
               ? const Center(
                   child: CircularProgressIndicator(color: Colors.white),
                 )
-              : Column(children: [
-                  const Text("Following"),
-                  ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: followList.length,
-                    itemBuilder: (context, index) {
-                      var followersItem =
-                          followList[index].data()! as Map<String, dynamic>;
+              : Column(
+                  children: [
+                    const Text("Following"),
+                    ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: followList.length,
+                      itemBuilder: (context, index) {
+                        var followersItem =
+                            followList[index].data()! as Map<String, dynamic>;
 
-                      return followersTile(followersItem["photoUrl"],
-                          followersItem["uid"], followersItem["username"]);
-                    },
-                  ),
-                ]),
+                        return followersTile(followersItem["photoUrl"],
+                            followersItem["uid"], followersItem["username"]);
+                      },
+                    ),
+                  ],
+                ),
     );
   }
 

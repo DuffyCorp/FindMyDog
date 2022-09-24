@@ -99,28 +99,32 @@ class _MessageWidgetState extends State<MessageWidget> {
                           ),
                           child: buildMessage(),
                         ),
-                        widget.index == 0
-                            ? widget.isMe
-                                ? Positioned(
-                                    bottom: -3,
-                                    left: -1,
-                                    child: Icon(
-                                      widget.message["read"] == false
-                                          ? Icons.check
-                                          : Icons.remove_red_eye,
-                                      size: 15,
-                                    ),
-                                  )
-                                : Container()
-                            : Container(),
                       ],
                     ),
                     widget.hideProf
                         ? Container()
-                        : Text(
-                            DateFormat('HH:mm').format(
-                              widget.message["createdAt"].toDate(),
-                            ),
+                        : Row(
+                            children: [
+                              widget.index == 0
+                                  ? widget.isMe
+                                      ? Positioned(
+                                          bottom: -3,
+                                          left: -3,
+                                          child: Icon(
+                                            widget.message["read"] == false
+                                                ? Icons.check
+                                                : Icons.remove_red_eye,
+                                            size: 15,
+                                          ),
+                                        )
+                                      : Container()
+                                  : Container(),
+                              Text(
+                                DateFormat('HH:mm').format(
+                                  widget.message["createdAt"].toDate(),
+                                ),
+                              ),
+                            ],
                           ),
                   ],
                 ),
@@ -183,6 +187,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                           );
                         },
                         child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
                           width: 200,
                           alignment: Alignment.center,
                           child: widget.message['message'] != ""
@@ -193,10 +198,28 @@ class _MessageWidgetState extends State<MessageWidget> {
                         ),
                       ),
                     ),
-                    Text(
-                      DateFormat('HH:MM').format(
-                        widget.message["createdAt"].toDate(),
-                      ),
+                    Row(
+                      children: [
+                        widget.index == 0
+                            ? widget.isMe
+                                ? Positioned(
+                                    bottom: -3,
+                                    left: -3,
+                                    child: Icon(
+                                      widget.message["read"] == false
+                                          ? Icons.check
+                                          : Icons.remove_red_eye,
+                                      size: 15,
+                                    ),
+                                  )
+                                : Container()
+                            : Container(),
+                        Text(
+                          DateFormat('HH:mm').format(
+                            widget.message["createdAt"].toDate(),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
