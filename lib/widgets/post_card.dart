@@ -196,7 +196,7 @@ class _PostCardState extends State<PostCard> {
                                       title: const Text('Post Options'),
                                       children: [
                                         SimpleDialogOption(
-                                          padding: EdgeInsets.all(20),
+                                          padding: const EdgeInsets.all(20),
                                           child: Row(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
@@ -213,7 +213,7 @@ class _PostCardState extends State<PostCard> {
                                           },
                                         ),
                                         SimpleDialogOption(
-                                          padding: EdgeInsets.all(20),
+                                          padding: const EdgeInsets.all(20),
                                           child: const Text('Cancel'),
                                           onPressed: () async {
                                             Navigator.of(context).pop();
@@ -226,7 +226,10 @@ class _PostCardState extends State<PostCard> {
                               },
                               icon: const Icon(Icons.more_vert),
                             )
-                          : Container(),
+                          : const SizedBox(
+                              width: 24,
+                              height: 24,
+                            ),
                     ],
                   ),
                 ),

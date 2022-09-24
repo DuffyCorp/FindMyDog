@@ -272,18 +272,33 @@ class FirestoreMethods {
           read: false,
         );
 
+        print("Testing doc");
+
         final refMessages = _firestore.collection('chats/$chatRoom/messages');
 
         await refMessages.add(
           newMessage.toJson(),
         );
 
-        if (myData['messagesNotification'] < 0) {
+        await FirebaseFirestore.instance.collection('chats').doc(chatRoom).set(
+          {
+            "lastMessaged": newMessage.createdAt,
+            "users": [
+              userData["uid"],
+              myData["uid"],
+            ]
+          },
+          SetOptions(merge: true),
+        );
+
+        if (userData['messagesNotification'] < 0) {
           await FirebaseFirestore.instance
               .collection('users')
               .doc(targetUid)
               .update(
-            {"messagesNotification": 0},
+            {
+              "messagesNotification": 0,
+            },
           );
         }
 
@@ -404,6 +419,17 @@ class FirestoreMethods {
 
         await refMessages.add(
           newMessage.toJson(),
+        );
+
+        await FirebaseFirestore.instance.collection('chats').doc(chatRoom).set(
+          {
+            "lastMessaged": newMessage.createdAt,
+            "users": [
+              userData["uid"],
+              myData["uid"],
+            ]
+          },
+          SetOptions(merge: true),
         );
 
         if (myData['messagesNotification'] < 0) {

@@ -57,15 +57,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
         centerTitle: false,
       ),
       body: Center(
-        child: FutureBuilder(
-          future: FirebaseFirestore.instance
-              .collection('users')
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('chats')
               .where(
-                'uid',
-                isNotEqualTo: FirebaseAuth.instance.currentUser!.uid,
+                'users',
+                arrayContains: FirebaseAuth.instance.currentUser!.uid,
               )
-              .orderBy('uid', descending: true)
-              .get(),
+              .orderBy('lastMessaged', descending: true)
+              .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
@@ -75,9 +75,46 @@ class _MessagesScreenState extends State<MessagesScreen> {
               );
             }
 
+            print((snapshot.data! as dynamic).docs[0]["users"]);
+
             return ListView.builder(
               physics: const BouncingScrollPhysics(),
               itemCount: (snapshot.data! as dynamic).docs.length,
+              itemBuilder: (context, index) {
+                return buildListTile((snapshot.data! as dynamic).docs[index]);
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildListTile(DocumentSnapshot groupchat) {
+    List<String> users = List.from(groupchat['users']);
+    for (var i = 0; i < users.length; i++) {
+      //print(users[i]);
+      if (users[i].toString() != FirebaseAuth.instance.currentUser!.uid) {
+        print(users[i]);
+        return FutureBuilder(
+          future: FirebaseFirestore.instance
+              .collection('users')
+              .where(
+                'uid',
+                isEqualTo: users[i],
+              )
+              //.orderBy('uid', descending: true)
+              .get(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container();
+            } else {
+              print((snapshot.data! as dynamic).docs[0]['uid']);
+            }
+            return ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: (snapshot.data! as dynamic).docs.length,
+              shrinkWrap: true,
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () async {
@@ -115,8 +152,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
               },
             );
           },
-        ),
-      ),
-    );
+        );
+      }
+    }
+    return Container();
   }
 }
