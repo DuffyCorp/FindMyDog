@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/screens/chat_screen.dart';
+import 'package:instagram_clone/screens/new_chat_screen.dart';
 import 'package:instagram_clone/widgets/message_subtitle.dart';
 
 import '../utils/colors.dart';
@@ -55,6 +56,20 @@ class _MessagesScreenState extends State<MessagesScreen> {
         ),
         title: const Text('Messages'),
         centerTitle: false,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.messenger_outline,
+            ),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => NewChat(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: StreamBuilder(
