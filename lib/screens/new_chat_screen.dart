@@ -61,6 +61,24 @@ class _NewChatState extends State<NewChat> {
       followers.add(data);
     }
 
+    // List<String> followerUids =
+    //     List.from(currentUserSnapshot.data()!["followers"]);
+
+    // //Loop through list
+    // for (int i = 0; i < followerUids.length; i++) {
+    //   var followerId = followerUids[i];
+
+    //   var userSnap = await FirebaseFirestore.instance
+    //       .collection('users')
+    //       .doc(followerId)
+    //       .get();
+
+    //   //store user data
+    //   var data = userSnap;
+
+    //   followers.add(data);
+    // }
+
     setState(
       () {
         followList = followers;

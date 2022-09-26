@@ -87,11 +87,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   //method to navigate back to login screen
   void navigateToLogin() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(),
-      ),
-    );
+    Navigator.of(context).pop();
   }
 
   @override

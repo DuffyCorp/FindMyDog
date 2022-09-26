@@ -90,7 +90,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               );
             }
 
-            print((snapshot.data! as dynamic).docs[0]["users"]);
+            //print((snapshot.data! as dynamic).docs[0]["users"]);
 
             return ListView.builder(
               physics: const BouncingScrollPhysics(),
@@ -110,7 +110,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     for (var i = 0; i < users.length; i++) {
       //print(users[i]);
       if (users[i].toString() != FirebaseAuth.instance.currentUser!.uid) {
-        print(users[i]);
+        //print(users[i]);
         return FutureBuilder(
           future: FirebaseFirestore.instance
               .collection('users')
@@ -124,7 +124,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             if (!snapshot.hasData) {
               return Container();
             } else {
-              print((snapshot.data! as dynamic).docs[0]['uid']);
+              //print((snapshot.data! as dynamic).docs[0]['uid']);
             }
             return ListView.builder(
               physics: const BouncingScrollPhysics(),

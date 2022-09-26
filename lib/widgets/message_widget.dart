@@ -57,76 +57,107 @@ class _MessageWidgetState extends State<MessageWidget> {
                               widget.message["profImage"].toString()),
                         ),
                       ),
-              Container(
-                margin: widget.hideProf
-                    ? const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        //top: 5,
-                        bottom: 3,
-                      )
-                    : const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        bottom: 16,
-                        //top: 16,
-                      ),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
+              GestureDetector(
+                onLongPress: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SimpleDialog(
+                        title: const Text('Comment Options'),
+                        children: [
+                          SimpleDialogOption(
+                            padding: const EdgeInsets.all(20),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.delete),
+                                Text(' Delete comment'),
+                              ],
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          constraints: const BoxConstraints(maxWidth: 140),
-                          decoration: BoxDecoration(
-                            color: widget.isMe ? Colors.grey[100] : accentColor,
-                            borderRadius: widget.isMe
-                                ? borderRadius.subtract(
-                                    widget.hideProf
-                                        ? const BorderRadius.only()
-                                        : const BorderRadius.only(
-                                            bottomRight: radius),
-                                  )
-                                : borderRadius.subtract(
-                                    widget.hideProf
-                                        ? const BorderRadius.only()
-                                        : const BorderRadius.only(
-                                            bottomLeft: radius),
-                                  ),
+                          SimpleDialogOption(
+                            padding: const EdgeInsets.all(20),
+                            child: const Text('Cancel'),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          child: buildMessage(),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  margin: widget.hideProf
+                      ? const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          //top: 5,
+                          bottom: 3,
+                        )
+                      : const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 16,
+                          //top: 16,
                         ),
-                      ],
-                    ),
-                    widget.hideProf
-                        ? Container()
-                        : Row(
-                            children: [
-                              widget.index == 0
-                                  ? widget.isMe
-                                      ? Positioned(
-                                          bottom: -3,
-                                          left: -3,
-                                          child: Icon(
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            constraints: const BoxConstraints(maxWidth: 140),
+                            decoration: BoxDecoration(
+                              color:
+                                  widget.isMe ? Colors.grey[100] : accentColor,
+                              borderRadius: widget.isMe
+                                  ? borderRadius.subtract(
+                                      widget.hideProf
+                                          ? const BorderRadius.only()
+                                          : const BorderRadius.only(
+                                              bottomRight: radius),
+                                    )
+                                  : borderRadius.subtract(
+                                      widget.hideProf
+                                          ? const BorderRadius.only()
+                                          : const BorderRadius.only(
+                                              bottomLeft: radius),
+                                    ),
+                            ),
+                            child: buildMessage(),
+                          ),
+                        ],
+                      ),
+                      widget.hideProf
+                          ? Container()
+                          : Row(
+                              children: [
+                                widget.index == 0
+                                    ? widget.isMe
+                                        ? Icon(
                                             widget.message["read"] == false
                                                 ? Icons.check
                                                 : Icons.remove_red_eye,
                                             size: 15,
-                                          ),
-                                        )
-                                      : Container()
-                                  : Container(),
-                              Text(
-                                DateFormat('HH:mm').format(
-                                  widget.message["createdAt"].toDate(),
+                                          )
+                                        : Container()
+                                    : Container(),
+                                Text(
+                                  DateFormat('HH:mm').format(
+                                    widget.message["createdAt"].toDate(),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                  ],
+                              ],
+                            ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -202,15 +233,11 @@ class _MessageWidgetState extends State<MessageWidget> {
                       children: [
                         widget.index == 0
                             ? widget.isMe
-                                ? Positioned(
-                                    bottom: -3,
-                                    left: -3,
-                                    child: Icon(
-                                      widget.message["read"] == false
-                                          ? Icons.check
-                                          : Icons.remove_red_eye,
-                                      size: 15,
-                                    ),
+                                ? Icon(
+                                    widget.message["read"] == false
+                                        ? Icons.check
+                                        : Icons.remove_red_eye,
+                                    size: 15,
                                   )
                                 : Container()
                             : Container(),
