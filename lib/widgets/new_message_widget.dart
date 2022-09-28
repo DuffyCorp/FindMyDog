@@ -7,8 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_clone/utils/colors.dart';
-import 'package:instagram_clone/widgets/text_field_input.dart';
+import 'package:find_my_dog/utils/colors.dart';
+import 'package:find_my_dog/widgets/text_field_input.dart';
 import 'package:uuid/uuid.dart';
 
 import '../resources/firestore_methods.dart';

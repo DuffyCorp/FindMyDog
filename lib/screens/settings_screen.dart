@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/resources/auth_methods.dart';
-import 'package:instagram_clone/screens/login_screen.dart';
-import 'package:instagram_clone/utils/colors.dart';
-import 'package:instagram_clone/widgets/settings_option.dart';
+import 'package:find_my_dog/resources/auth_methods.dart';
+import 'package:find_my_dog/screens/login_screen.dart';
+import 'package:find_my_dog/utils/colors.dart';
+import 'package:find_my_dog/widgets/settings_option.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({Key? key}) : super(key: key);

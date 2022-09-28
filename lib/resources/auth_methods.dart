@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/models/user.dart' as model;
-import 'package:instagram_clone/resources/storage_methods.dart';
+import 'package:find_my_dog/models/user.dart' as model;
+import 'package:find_my_dog/resources/storage_methods.dart';
 
 import '../models/push_notification.dart';
 

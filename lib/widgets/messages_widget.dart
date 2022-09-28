@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/models/message.dart';
+import 'package:find_my_dog/models/message.dart';
 import 'package:intl/intl.dart';
 
 import 'message_widget.dart';

@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:instagram_clone/screens/profile_screen.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:find_my_dog/screens/profile_screen.dart';
+import 'package:find_my_dog/utils/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 

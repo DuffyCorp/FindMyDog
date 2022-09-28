@@ -1,6 +1,6 @@
 {
-    "name": "instagram_clone",
-    "short_name": "instagram_clone",
+    "name": "find_my_dog",
+    "short_name": "find_my_dog",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

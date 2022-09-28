@@ -5,10 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:instagram_clone/models/comment.dart';
-import 'package:instagram_clone/models/message.dart';
-import 'package:instagram_clone/models/posts.dart';
-import 'package:instagram_clone/resources/storage_methods.dart';
+import 'package:find_my_dog/models/comment.dart';
+import 'package:find_my_dog/models/message.dart';
+import 'package:find_my_dog/models/posts.dart';
+import 'package:find_my_dog/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -238,9 +238,6 @@ class FirestoreMethods {
   ) async {
     try {
       if (message.isNotEmpty) {
-        //Create comment ID
-        String commentId = const Uuid().v1();
-
         String chatRoom = chatroomId(myUid, targetUid);
 
         //get user data from firebase

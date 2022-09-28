@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/models/user.dart';
-import 'package:instagram_clone/providers/users_provider.dart';
-import 'package:instagram_clone/resources/firestore_methods.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:find_my_dog/models/user.dart';
+import 'package:find_my_dog/providers/users_provider.dart';
+import 'package:find_my_dog/resources/firestore_methods.dart';
+import 'package:find_my_dog/utils/colors.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/comment_card.dart';

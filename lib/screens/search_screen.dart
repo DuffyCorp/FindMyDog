@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:instagram_clone/screens/post_screen.dart';
-import 'package:instagram_clone/screens/profile_screen.dart';
-import 'package:instagram_clone/utils/colors.dart';
-import 'package:instagram_clone/utils/global_variables.dart';
+import 'package:find_my_dog/screens/post_screen.dart';
+import 'package:find_my_dog/screens/profile_screen.dart';
+import 'package:find_my_dog/utils/colors.dart';
+import 'package:find_my_dog/utils/global_variables.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);

@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.instagram_clone">
+    package="com.example.find_my_dog">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
    <application
-        android:label="instagram_clone"
+        android:label="Find My Dog"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

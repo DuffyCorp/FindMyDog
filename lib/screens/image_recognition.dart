@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:find_my_dog/utils/colors.dart';
 import 'package:tflite/tflite.dart';
 
 class imageRecognition extends StatefulWidget {

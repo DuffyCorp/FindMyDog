@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/resources/auth_methods.dart';
-import 'package:instagram_clone/resources/firestore_methods.dart';
-import 'package:instagram_clone/screens/chat_screen.dart';
-import 'package:instagram_clone/screens/login_screen.dart';
-import 'package:instagram_clone/screens/post_screen.dart';
-import 'package:instagram_clone/screens/settings_screen.dart';
-import 'package:instagram_clone/utils/colors.dart';
-import 'package:instagram_clone/utils/utils.dart';
-import 'package:instagram_clone/widgets/follow_button.dart';
+import 'package:find_my_dog/resources/auth_methods.dart';
+import 'package:find_my_dog/resources/firestore_methods.dart';
+import 'package:find_my_dog/screens/chat_screen.dart';
+import 'package:find_my_dog/screens/login_screen.dart';
+import 'package:find_my_dog/screens/post_screen.dart';
+import 'package:find_my_dog/screens/settings_screen.dart';
+import 'package:find_my_dog/utils/colors.dart';
+import 'package:find_my_dog/utils/utils.dart';
+import 'package:find_my_dog/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;

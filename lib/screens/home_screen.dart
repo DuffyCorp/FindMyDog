@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/screens/feed_screen.dart';
-import 'package:instagram_clone/screens/messages_screen.dart';
+import 'package:find_my_dog/screens/feed_screen.dart';
+import 'package:find_my_dog/screens/messages_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

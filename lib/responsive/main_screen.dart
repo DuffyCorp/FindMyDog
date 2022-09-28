@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:instagram_clone/providers/location_provider.dart';
-import 'package:instagram_clone/responsive/responsive_layout_screen.dart';
+import 'package:find_my_dog/providers/location_provider.dart';
+import 'package:find_my_dog/responsive/responsive_layout_screen.dart';
 
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';

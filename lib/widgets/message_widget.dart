@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/screens/profile_screen.dart';
-import 'package:instagram_clone/utils/colors.dart';
-import 'package:instagram_clone/widgets/show_image.dart';
+import 'package:find_my_dog/screens/profile_screen.dart';
+import 'package:find_my_dog/utils/colors.dart';
+import 'package:find_my_dog/widgets/show_image.dart';
 import 'package:intl/intl.dart';
 
 class MessageWidget extends StatefulWidget {

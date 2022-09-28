@@ -6,11 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:instagram_clone/providers/location_provider.dart';
-import 'package:instagram_clone/utils/colors.dart';
-import 'package:instagram_clone/utils/global_variables.dart';
-import 'package:instagram_clone/utils/utils.dart';
-import 'package:instagram_clone/widgets/post_card.dart';
+import 'package:find_my_dog/providers/location_provider.dart';
+import 'package:find_my_dog/utils/colors.dart';
+import 'package:find_my_dog/utils/global_variables.dart';
+import 'package:find_my_dog/utils/utils.dart';
+import 'package:find_my_dog/widgets/post_card.dart';
 import 'package:location/location.dart';
 
 class FeedScreen extends StatefulWidget {

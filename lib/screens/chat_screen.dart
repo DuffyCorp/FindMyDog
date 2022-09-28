@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/screens/profile_screen.dart';
-import 'package:instagram_clone/utils/colors.dart';
-import 'package:instagram_clone/widgets/new_message_widget.dart';
+import 'package:find_my_dog/screens/profile_screen.dart';
+import 'package:find_my_dog/utils/colors.dart';
+import 'package:find_my_dog/widgets/new_message_widget.dart';
 
 import '../utils/utils.dart';
 import '../widgets/messages_widget.dart';
