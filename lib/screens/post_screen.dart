@@ -46,6 +46,12 @@ class _PostScreenState extends State<PostScreen> {
   var snap;
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   void initState() {
     snap = widget.snap;
     init();
@@ -202,16 +208,16 @@ class _PostScreenState extends State<PostScreen> {
                                 );
                               },
                               onDoubleTap: () async {
-                                await FirestoreMethods().likePost(
-                                  (snapshot.data! as dynamic).docs[index]
-                                      ['postId'],
-                                  userData['uid'],
-                                  (snapshot.data! as dynamic).docs[index]
-                                      ['likes'],
-                                );
-                                setState(() {
-                                  isLikeAnimating = true;
-                                });
+                                // await FirestoreMethods().likePost(
+                                //   (snapshot.data! as dynamic).docs[index]
+                                //       ['postId'],
+                                //   userData['uid'],
+                                //   (snapshot.data! as dynamic).docs[index]
+                                //       ['likes'],
+                                // );
+                                // setState(() {
+                                //   isLikeAnimating = true;
+                                // });
                               },
                               child: Stack(
                                 alignment: Alignment.center,

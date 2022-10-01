@@ -82,6 +82,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
               .orderBy('lastMessaged', descending: true)
               .snapshots(),
           builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              );
+            }
             if (!snapshot.hasData) {
               return const Center(
                 child: CircularProgressIndicator(
@@ -121,6 +126,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
               //.orderBy('uid', descending: true)
               .get(),
           builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              );
+            }
             if (!snapshot.hasData) {
               return Container();
             } else {

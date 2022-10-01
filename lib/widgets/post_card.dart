@@ -226,9 +226,12 @@ class _PostCardState extends State<PostCard> {
                               },
                               icon: const Icon(Icons.more_vert),
                             )
-                          : const SizedBox(
-                              width: 24,
-                              height: 24,
+                          : Opacity(
+                              opacity: 0,
+                              child: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.more_vert),
+                              ),
                             ),
                     ],
                   ),
@@ -508,7 +511,9 @@ class _PostCardState extends State<PostCard> {
                                           ),
                                           Text(
                                             widget.snap['username'].toString(),
-                                            style: TextStyle(fontSize: 16),
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                            ),
                                           ),
                                         ],
                                       ),

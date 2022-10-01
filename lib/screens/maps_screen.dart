@@ -3,6 +3,9 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custom_info_window/custom_info_window.dart';
+import 'package:find_my_dog/screens/post_screen.dart';
+import 'package:find_my_dog/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,6 +31,9 @@ class _MapsScreenState extends State<MapsScreen>
   final userId = FirebaseAuth.instance.currentUser!.uid;
 
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+
+  CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
 
   getMarkerData() {
     posts.get().then((QuerySnapshot querySnapshot) {
@@ -64,6 +70,8 @@ class _MapsScreenState extends State<MapsScreen>
   }
 
   void initMarker(specify, specifyId) async {
+    LatLng markerLocation = LatLng(
+        specify['dogLocation'].latitude, specify['dogLocation'].longitude);
     var markerIdVal = specifyId;
     final MarkerId markerId = MarkerId(markerIdVal);
     final Marker marker = Marker(
@@ -73,8 +81,89 @@ class _MapsScreenState extends State<MapsScreen>
       icon: specify['dogStatus'] == 'Found'
           ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
           : BitmapDescriptor.defaultMarker,
-      infoWindow:
-          InfoWindow(title: '${specify['dogStatus']} ${specify['dogBreed']}'),
+      onTap: () {
+        _customInfoWindowController.addInfoWindow!(
+          GestureDetector(
+            onTap: () {
+              //showSnackBar("tapped", context);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PostScreen(
+                    snap: specify,
+                    uid: FirebaseAuth.instance.currentUser!.uid,
+                    //postUid: snap['postId'],
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              height: 300,
+              width: 200,
+              decoration: BoxDecoration(
+                color:
+                    specify['dogStatus'] == 'Found' ? accentColor : Colors.red,
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 300,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          specify['postUrl'],
+                        ),
+                        fit: BoxFit.fitWidth,
+                        filterQuality: FilterQuality.high,
+                      ),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 10, left: 10, right: 10),
+                    child: Center(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            specify['dogStatus'],
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            ),
+                          ),
+                          Text(
+                            " ${specify['dogBreed']}",
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          markerLocation,
+        );
+      },
     );
     setState(() {
       markers.add(marker);
@@ -108,9 +197,23 @@ class _MapsScreenState extends State<MapsScreen>
                         _currentLocation!.longitude!),
                     zoom: 14,
                   ),
+                  onTap: (position) {
+                    _customInfoWindowController.hideInfoWindow!();
+                  },
+                  onCameraMove: (position) {
+                    _customInfoWindowController.onCameraMove!();
+                  },
                   onMapCreated: (GoogleMapController controller) {
+                    _customInfoWindowController.googleMapController =
+                        controller;
                     _controller.complete(controller);
                   },
+                ),
+                CustomInfoWindow(
+                  controller: _customInfoWindowController,
+                  height: 200,
+                  width: 300,
+                  offset: 35,
                 ),
                 // DraggableScrollableSheet(
                 //   expand: true,
