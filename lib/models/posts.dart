@@ -15,22 +15,27 @@ class Post {
   final datePublished;
   final String postUrl;
   final String profImage;
+  final String what3words;
+  final String what3wordsLink;
   final likes;
 
-  const Post(
-      {required this.dogStatus,
-      required this.dogBreed,
-      required this.dogColor,
-      required this.description,
-      required this.dogLocation,
-      required this.address,
-      required this.uid,
-      required this.username,
-      required this.postId,
-      required this.datePublished,
-      required this.postUrl,
-      required this.profImage,
-      required this.likes});
+  const Post({
+    required this.dogStatus,
+    required this.dogBreed,
+    required this.dogColor,
+    required this.description,
+    required this.dogLocation,
+    required this.address,
+    required this.uid,
+    required this.username,
+    required this.postId,
+    required this.datePublished,
+    required this.postUrl,
+    required this.profImage,
+    required this.what3words,
+    required this.what3wordsLink,
+    required this.likes,
+  });
 
   //Converts user model to Json format
   Map<String, dynamic> toJson() => {
@@ -46,6 +51,8 @@ class Post {
         "datePublished": datePublished,
         "postUrl": postUrl,
         "profImage": profImage,
+        "what3words": what3words,
+        "what3wordsLink": what3wordsLink,
         "likes": likes,
       };
 
@@ -68,6 +75,8 @@ class Post {
       datePublished: snapshot['datePublished'],
       postUrl: snapshot['postUrl'],
       profImage: snapshot['profImage'],
+      what3words: snapshot['what3words'],
+      what3wordsLink: snapshot['what3wordsLink'],
       likes: snapshot['likes'],
     );
   }

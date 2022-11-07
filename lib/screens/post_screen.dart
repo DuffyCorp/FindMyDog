@@ -99,7 +99,7 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   void getDistance() async {
-    GeoPoint geoPoint = snap['dogLocation'];
+    GeoPoint geoPoint = snap['dogLocation']['geopoint'];
 
     position = LatLng(geoPoint.latitude, geoPoint.longitude);
     double newDistance = calculateDistance(

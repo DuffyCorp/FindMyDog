@@ -70,14 +70,14 @@ class _MapsScreenState extends State<MapsScreen>
   }
 
   void initMarker(specify, specifyId) async {
-    LatLng markerLocation = LatLng(
-        specify['dogLocation'].latitude, specify['dogLocation'].longitude);
+    LatLng markerLocation = LatLng(specify['dogLocation']['geopoint'].latitude,
+        specify['dogLocation']['geopoint'].longitude);
     var markerIdVal = specifyId;
     final MarkerId markerId = MarkerId(markerIdVal);
     final Marker marker = Marker(
       markerId: markerId,
-      position: LatLng(
-          specify['dogLocation'].latitude, specify['dogLocation'].longitude),
+      position: LatLng(specify['dogLocation']['geopoint'].latitude,
+          specify['dogLocation']['geopoint'].longitude),
       icon: specify['dogStatus'] == 'Found'
           ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
           : BitmapDescriptor.defaultMarker,
@@ -192,6 +192,15 @@ class _MapsScreenState extends State<MapsScreen>
                   zoomControlsEnabled: false,
                   myLocationEnabled: true,
                   markers: Set.from(markers),
+                  circles: {
+                    Circle(
+                        circleId: CircleId("CurrentLocation"),
+                        center: LatLng(_currentLocation!.latitude!,
+                            _currentLocation!.longitude!),
+                        radius: 200,
+                        strokeWidth: 1,
+                        fillColor: Color(0xFF006491).withOpacity(0.2))
+                  },
                   initialCameraPosition: CameraPosition(
                     target: LatLng(_currentLocation!.latitude!,
                         _currentLocation!.longitude!),

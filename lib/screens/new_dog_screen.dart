@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:find_my_dog/models/user.dart';
 import 'package:find_my_dog/providers/users_provider.dart';
 import 'package:find_my_dog/resources/firestore_methods.dart';
-import 'package:find_my_dog/screens/image_recognition.dart';
 import 'package:find_my_dog/utils/colors.dart';
 import 'package:find_my_dog/utils/utils.dart';
 import 'package:provider/provider.dart';

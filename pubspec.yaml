@@ -30,9 +30,11 @@ dependencies:
   cloud_firestore: ^3.4.3
   cupertino_icons: ^1.0.2
   custom_info_window: ^1.0.1
+  firebase: ^9.0.3
   firebase_auth: ^3.6.2
   firebase_core: ^1.20.0
   firebase_messaging: ^13.0.0
+  firebase_ml_model_downloader: ^0.2.0
   firebase_storage: ^10.3.4
   flutter:
     sdk: flutter
@@ -41,6 +43,7 @@ dependencies:
   flutter_staggered_grid_view: 0.4.1
   flutter_svg: ^1.1.3
   geocoding: ^2.0.4
+  geoflutterfire: ^3.0.2
   geolocator: ^9.0.1
   google_maps_flutter: ^2.1.12
   http: ^0.13.5
@@ -51,7 +54,9 @@ dependencies:
   provider: ^6.0.3
   smooth_page_indicator: ^1.0.0+2
   tflite: ^1.1.2
+  url_launcher: ^6.1.6
   uuid: ^3.0.6
+  what3words: ^3.1.0
 
 dev_dependencies:
   flutter_lints: ^2.0.0

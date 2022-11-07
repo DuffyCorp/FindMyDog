@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -63,6 +64,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
     // TODO: implement initState
     super.initState();
     loadModel();
+    //initWithLocalModel();
     controller = PageController();
     if (currentLocation == null) {
       getCurrentLocation();
@@ -185,6 +187,21 @@ class _SwipeScreenState extends State<SwipeScreen> {
     _colorController.dispose();
   }
 
+  // Future initWithLocalModel() async {
+  //   final _model = await FirebaseModelDownloader.instance
+  //       .getModel("Dog-Breeds", FirebaseModelDownloadType.latestModel);
+
+  //   final localModelPath = _model.file;
+
+  //   print(localModelPath.toString());
+
+  //   Tflite.close();
+  //   String res;
+  //   res = (await Tflite.loadModel(
+  //       model: localModelPath.toString(), labels: "assets/labels.txt"))!;
+  //   print("Remote Models Loading status: ${res}");
+  // }
+
   Future loadModel() async {
     Tflite.close();
     String res;
@@ -194,6 +211,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
   }
 
   Future imageClassification(File image) async {
+    print("Testing");
     var recognitions = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 6,

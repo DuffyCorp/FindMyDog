@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:find_my_dog/models/user.dart' as model;
 import 'package:find_my_dog/resources/storage_methods.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 
 import '../models/push_notification.dart';
 
@@ -13,6 +14,7 @@ class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final geo = Geoflutterfire();
 
   //Method for getting user details from Firebase
   Future<model.User> getUserDetails() async {
@@ -91,6 +93,9 @@ class AuthMethods {
     //set default error message
     String res = "Some error occurred";
 
+    GeoFirePoint myLocation =
+        geo.point(latitude: 12.960632, longitude: 77.641603);
+
     try {
       //if inputs are not empty
       if (email.isNotEmpty || password.isNotEmpty) {
@@ -102,7 +107,7 @@ class AuthMethods {
           FirebaseFirestore.instance
               .collection('users')
               .doc(FirebaseAuth.instance.currentUser!.uid)
-              .update({'deviceToken': token});
+              .update({'deviceToken': token, 'position': myLocation.data});
         });
 
         //set success response
