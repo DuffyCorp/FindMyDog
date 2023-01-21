@@ -20,8 +20,7 @@ class MapsScreen extends StatefulWidget {
   State<MapsScreen> createState() => _MapsScreenState();
 }
 
-class _MapsScreenState extends State<MapsScreen>
-    with AutomaticKeepAliveClientMixin {
+class _MapsScreenState extends State<MapsScreen> {
   bool get wantKeepAlive => true;
   Completer<GoogleMapController> _controller = Completer();
   TextEditingController _searchController = TextEditingController();
@@ -52,7 +51,7 @@ class _MapsScreenState extends State<MapsScreen>
       (newLocation) {
         setState(() {
           _currentLocation = newLocation;
-          currentLocation = newLocation;
+          globalCurrentLocation = newLocation;
         });
       },
     );
@@ -61,10 +60,10 @@ class _MapsScreenState extends State<MapsScreen>
   @override
   void initState() {
     super.initState();
-    if (currentLocation == null) {
+    if (globalCurrentLocation == null) {
       getCurrentLocation();
     } else {
-      _currentLocation = currentLocation;
+      _currentLocation = globalCurrentLocation;
     }
     getMarkerData();
   }
@@ -78,9 +77,11 @@ class _MapsScreenState extends State<MapsScreen>
       markerId: markerId,
       position: LatLng(specify['dogLocation']['geopoint'].latitude,
           specify['dogLocation']['geopoint'].longitude),
-      icon: specify['dogStatus'] == 'Found'
-          ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
-          : BitmapDescriptor.defaultMarker,
+      icon: specify['dogStatus'] == 'Lost'
+          ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
+          : specify['dogStatus'] == 'Found'
+              ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+              : BitmapDescriptor.defaultMarker,
       onTap: () {
         _customInfoWindowController.addInfoWindow!(
           GestureDetector(
@@ -100,8 +101,11 @@ class _MapsScreenState extends State<MapsScreen>
               height: 300,
               width: 200,
               decoration: BoxDecoration(
-                color:
-                    specify['dogStatus'] == 'Found' ? accentColor : Colors.red,
+                color: specify['dogStatus'] == 'Lost'
+                    ? Colors.amber
+                    : specify['dogStatus'] == 'Found'
+                        ? accentColor
+                        : Colors.red,
                 border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -173,7 +177,6 @@ class _MapsScreenState extends State<MapsScreen>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nearby You'),
@@ -192,15 +195,6 @@ class _MapsScreenState extends State<MapsScreen>
                   zoomControlsEnabled: false,
                   myLocationEnabled: true,
                   markers: Set.from(markers),
-                  circles: {
-                    Circle(
-                        circleId: CircleId("CurrentLocation"),
-                        center: LatLng(_currentLocation!.latitude!,
-                            _currentLocation!.longitude!),
-                        radius: 200,
-                        strokeWidth: 1,
-                        fillColor: Color(0xFF006491).withOpacity(0.2))
-                  },
                   initialCameraPosition: CameraPosition(
                     target: LatLng(_currentLocation!.latitude!,
                         _currentLocation!.longitude!),

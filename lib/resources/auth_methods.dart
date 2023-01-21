@@ -62,6 +62,7 @@ class AuthMethods {
           photoUrl: photoUrl,
           following: [],
           followers: [],
+          messagesNotification: 0,
         );
 
         //add user to database

@@ -28,10 +28,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     controller = PageController();
-    if (currentLocation == null) {
+    if (globalCurrentLocation == null) {
       getCurrentLocation();
     } else {
-      _currentLocation = currentLocation;
+      _currentLocation = globalCurrentLocation;
       updateLocation();
     }
     setStatus("Online");
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       (newLocation) {
         setState(() {
           _currentLocation = newLocation;
-          currentLocation = newLocation;
+          globalCurrentLocation = newLocation;
         });
         updateLocation();
       },
@@ -67,10 +67,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void updateLocation() async {
     GeoFirePoint myLocation = geo.point(
-        latitude: currentLocation!.latitude!,
-        longitude: currentLocation!.longitude!);
+        latitude: globalCurrentLocation!.latitude!,
+        longitude: globalCurrentLocation!.longitude!);
 
-    if (currentLocation != null) {
+    if (globalCurrentLocation != null) {
       await _firestore
           .collection('users')
           .doc(_auth.currentUser!.uid)

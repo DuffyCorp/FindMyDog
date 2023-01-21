@@ -111,6 +111,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   );
                 }
+
                 return StaggeredGridView.countBuilder(
                   crossAxisCount: 3,
                   itemCount: (snapshot.data! as dynamic).docs.length,

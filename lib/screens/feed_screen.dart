@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:find_my_dog/providers/location_provider.dart';
 import 'package:find_my_dog/utils/colors.dart';
@@ -28,10 +29,10 @@ class _FeedScreenState extends State<FeedScreen>
   @override
   void initState() {
     // TODO: implement initState
-    if (currentLocation == null) {
+    if (globalCurrentLocation == null) {
       getCurrentLocation();
     } else {
-      _currentLocation = currentLocation;
+      _currentLocation = globalCurrentLocation;
     }
     super.initState();
   }
@@ -42,7 +43,7 @@ class _FeedScreenState extends State<FeedScreen>
       (newLocation) {
         setState(() {
           _currentLocation = newLocation;
-          currentLocation = newLocation;
+          globalCurrentLocation = newLocation;
         });
       },
     );
@@ -89,6 +90,7 @@ class _FeedScreenState extends State<FeedScreen>
                           children: <Widget>[
                             IconButton(
                               onPressed: () {
+                                HapticFeedback.lightImpact();
                                 widget.controller.animateToPage(
                                   1,
                                   duration: const Duration(milliseconds: 200),
@@ -102,6 +104,7 @@ class _FeedScreenState extends State<FeedScreen>
                             snapshot.connectionState == ConnectionState.waiting
                                 ? IconButton(
                                     onPressed: () {
+                                      HapticFeedback.lightImpact();
                                       widget.controller.animateToPage(
                                         1,
                                         duration:
@@ -113,7 +116,9 @@ class _FeedScreenState extends State<FeedScreen>
                                       Icons.messenger_outline,
                                     ),
                                   )
-                                : snapshot.data!['messagesNotification'] == 0
+                                : snapshot.data!['messagesNotification']
+                                            .toInt() ==
+                                        0
                                     ? Container()
                                     : Positioned(
                                         child: Stack(
@@ -130,6 +135,7 @@ class _FeedScreenState extends State<FeedScreen>
                                                 child: Text(
                                                   snapshot.data![
                                                           'messagesNotification']
+                                                      .toInt()
                                                       .toString(),
                                                   style: const TextStyle(
                                                       color: Colors.white,

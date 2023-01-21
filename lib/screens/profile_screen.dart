@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:find_my_dog/screens/new_dog_account.dart';
+import 'package:find_my_dog/screens/view_dog_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:find_my_dog/resources/auth_methods.dart';
@@ -10,6 +12,7 @@ import 'package:find_my_dog/screens/settings_screen.dart';
 import 'package:find_my_dog/utils/colors.dart';
 import 'package:find_my_dog/utils/utils.dart';
 import 'package:find_my_dog/widgets/follow_button.dart';
+import 'package:flutter/services.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -268,6 +271,104 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Divider(
                   color: Colors.grey,
                 ),
+                FirebaseAuth.instance.currentUser!.uid == uid
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text("Dogs"),
+                          Container(
+                            height: 120,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(uid)
+                                    .collection("dogs")
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                          color: Colors.white),
+                                    );
+                                  }
+                                  if (!snapshot.hasData) {
+                                    return Container();
+                                  }
+                                  return ListView.builder(
+                                    physics: const BouncingScrollPhysics(),
+                                    itemCount: (snapshot.data! as dynamic)
+                                            .docs
+                                            .length +
+                                        1,
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      if (index == 0) {
+                                        return addDogAccount(context);
+                                      } else {
+                                        DocumentSnapshot snap =
+                                            (snapshot.data! as dynamic)
+                                                .docs[index - 1];
+                                        return Row(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: accentColor
+                                                      .withOpacity(0.80),
+                                                  width: 3,
+                                                ),
+                                              ),
+                                              child: SizedBox(
+                                                width: 70,
+                                                height: 70,
+                                                child: FittedBox(
+                                                  fit: BoxFit.contain,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.of(context)
+                                                          .push(
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ViewDogAccount(
+                                                                  snap: snap),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: CircleAvatar(
+                                                      radius: 35,
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                        snap['file'],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          const Divider(
+                            color: Colors.grey,
+                          ),
+                        ],
+                      )
+                    : SizedBox(),
                 FutureBuilder(
                     future: FirebaseFirestore.instance
                         .collection('posts')
@@ -353,4 +454,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+}
+
+Widget addDogAccount(context) {
+  return Row(
+    children: [
+      InkWell(
+        onTap: () => {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => NewDogAccountScreen(),
+            ),
+          ),
+        },
+        child: Container(
+          height: 70,
+          width: 70,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.grey,
+          ),
+          alignment: Alignment.center,
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      SizedBox(
+        width: 12,
+      ),
+    ],
+  );
 }

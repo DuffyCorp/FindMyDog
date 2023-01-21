@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:find_my_dog/utils/colors.dart';
 import 'package:find_my_dog/widgets/text_field_input.dart';
@@ -67,6 +68,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
   }
 
   SelectImageType() async {
+    HapticFeedback.lightImpact();
     return showDialog(
         context: context,
         builder: (context) {
@@ -166,6 +168,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
 
   void sendMessage() async {
     if (_newMessageController.text != '') {
+      HapticFeedback.lightImpact();
       FocusScope.of(context).unfocus();
 
       await FirestoreMethods().postMessage(

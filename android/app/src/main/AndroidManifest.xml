@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.find_my_dog">
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" /> 
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<queries> <intent> <action android:name="android.intent.action.SENDTO" /> <data android:scheme="mailto" /> </intent> </queries>
    <application
         android:label="Find My Dog"
         android:name="${applicationName}"
@@ -48,5 +50,8 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="mychannel" />
+        <meta-data
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="ocr" />
     </application>
 </manifest>

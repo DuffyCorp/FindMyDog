@@ -1,9 +1,20 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:find_my_dog/screens/confirm_dog_post.dart';
+import 'package:find_my_dog/screens/dog_details_screen.dart';
+import 'package:find_my_dog/screens/dog_location_screen.dart';
+import 'package:find_my_dog/screens/dog_status_screen.dart';
+import 'package:find_my_dog/screens/phone_number_screen.dart';
+import 'package:find_my_dog/screens/pick_dog_accounts.dart';
+import 'package:find_my_dog/screens/post_success_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:find_my_dog/utils/colors.dart';
@@ -26,7 +37,10 @@ class SwipeScreen extends StatefulWidget {
   State<SwipeScreen> createState() => _SwipeScreenState();
 }
 
-class _SwipeScreenState extends State<SwipeScreen> {
+class _SwipeScreenState extends State<SwipeScreen>
+    with AutomaticKeepAliveClientMixin<SwipeScreen> {
+  @override
+  bool get wantKeepAlive => true;
   //
   // CONTROLLERS
   //
@@ -47,29 +61,56 @@ class _SwipeScreenState extends State<SwipeScreen> {
   //
   //VARIABLES
   //
+
+  bool dogAccountsLength = false;
+
   String dogStatus = '';
   List<Marker> myMarker = [];
-  LatLng dogLocation = const LatLng(0, 0);
+  LatLng dogLocation = LatLng(0, 0);
   String scanning = '';
   bool _isLoading = false;
   bool imageSelect = false;
-  late File _image;
-  late List _results;
+  File _image = File('');
+  List _results = [];
   bool isLost = false;
   Uint8List? _file;
-  LocationData? _currentLocation;
+  List<String> labels = [];
+  String dogAccountImage = "";
+
+  void reset() {
+    dogStatus = '';
+    myMarker = [];
+    dogLocation = LatLng(0, 0);
+    scanning = '';
+    _image = File('');
+    _results = [];
+    isLost = false;
+    dogAccountImage = "";
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadLabels();
+
     loadModel();
     //initWithLocalModel();
     controller = PageController();
-    if (currentLocation == null) {
-      getCurrentLocation();
-    } else {
-      _currentLocation = currentLocation;
+
+    checkDogs();
+  }
+
+  void checkDogs() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(fbAuth.FirebaseAuth.instance.currentUser!.uid)
+        .collection("dogs")
+        .get();
+    if (snapshot.docs.length > 0) {
+      setState(() {
+        dogAccountsLength = true;
+      });
     }
   }
 
@@ -119,64 +160,41 @@ class _SwipeScreenState extends State<SwipeScreen> {
     }
   }
 
-  _selectImage(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            title: const Text('Create a Post'),
-            children: [
-              SimpleDialogOption(
-                padding: EdgeInsets.all(20),
-                child: const Text('Take a Photo'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(
-                    ImageSource.camera,
-                  );
-                  setState(() {
-                    _file = file;
-                  });
-                },
-              ),
-              SimpleDialogOption(
-                padding: EdgeInsets.all(20),
-                child: const Text('Select from gallery'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(
-                    ImageSource.gallery,
-                  );
-                  setState(() {
-                    _file = file;
-                  });
-                },
-              ),
-              SimpleDialogOption(
-                padding: EdgeInsets.all(20),
-                child: const Text('Cancel'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
-
-  void getCurrentLocation() async {
-    final service = LocationProvider();
-    final locationData = await service.getLocation();
-    setState(() {
-      _currentLocation = locationData;
-      currentLocation = locationData;
-    });
-  }
-
   void clearImage() {
     setState(() {
       _file = null;
     });
+  }
+
+  _handleTap(LatLng tappedPoint) {
+    setState(
+      () {
+        myMarker = [];
+        myMarker.add(
+          Marker(
+            markerId: MarkerId(
+              tappedPoint.toString(),
+            ),
+            position: tappedPoint,
+            draggable: true,
+            onDragEnd: (dragEndPosition) {
+              print(dragEndPosition);
+            },
+            icon: dogStatus == 'Found'
+                ? BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueGreen)
+                : dogStatus == 'Lost'
+                    ? BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueOrange)
+                    : BitmapDescriptor.defaultMarker,
+            infoWindow:
+                InfoWindow(title: '${dogStatus} ${_dogBreedController.text}'),
+          ),
+        );
+        dogLocation = tappedPoint;
+      },
+    );
+    //getLocation();
   }
 
   @override
@@ -211,7 +229,6 @@ class _SwipeScreenState extends State<SwipeScreen> {
   }
 
   Future imageClassification(File image) async {
-    print("Testing");
     var recognitions = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 6,
@@ -219,11 +236,26 @@ class _SwipeScreenState extends State<SwipeScreen> {
       imageMean: 127.5,
       imageStd: 127.5,
     );
-    print(recognitions);
     setState(() {
       _results = recognitions!;
       _image = image;
       imageSelect = true;
+    });
+  }
+
+  void loadLabels() async {
+    LineSplitter lineSplitter = const LineSplitter();
+
+    final loadedLabels = await rootBundle.loadString("assets/labels.txt");
+
+    loadedLabels.replaceAll(new RegExp(r"/d"), "");
+
+    List<String> convertedLabels = lineSplitter.convert(loadedLabels);
+
+    convertedLabels.addAll(["Mix", "Undefined"]);
+
+    setState(() {
+      labels = convertedLabels;
     });
   }
 
@@ -238,9 +270,9 @@ class _SwipeScreenState extends State<SwipeScreen> {
                 padding: EdgeInsets.all(20),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+                  children: const [
                     Icon(Icons.camera_alt_rounded),
-                    const Text(' Take a Photo'),
+                    Text(' Take a Photo'),
                   ],
                 ),
                 onPressed: () async {
@@ -289,9 +321,20 @@ class _SwipeScreenState extends State<SwipeScreen> {
         });
   }
 
+  void changeStatus(String value) {
+    setState(() {
+      dogStatus = value;
+    });
+  }
+
+  void changeDogImage(String value) {
+    setState(() {
+      dogAccountImage = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).getUser;
     return Stack(
       children: [
         PageView(
@@ -301,622 +344,75 @@ class _SwipeScreenState extends State<SwipeScreen> {
             setState(() {});
           },
           children: [
-            Scaffold(
-              appBar: AppBar(
-                backgroundColor: mobileBackgroundColor,
-                title: const Text('Report a Dog'),
-                centerTitle: false,
-              ),
-              //Show 2 buttons for setting lost status
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  //First button for setting status to Lost
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        dogStatus = 'Lost';
-                      });
-                      controller.animateToPage(
-                        1,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.ease,
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(90.0),
-                          ),
-                          color: Colors.red,
-                          child: Container(
-                            width: 150,
-                            height: 150,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Container(
-                                  child: const Icon(
-                                    Icons.report_rounded,
-                                    size: 50,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const Center(
-                          child: Text(
-                            'Lost',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: primaryColor,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  //Second button for setting status to found
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        dogStatus = 'Found';
-                      });
-                      controller.animateToPage(
-                        1,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.ease,
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(90.0),
-                          ),
-                          color: accentColor,
-                          child: Container(
-                            width: 150,
-                            height: 150,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: const [
-                                Icon(
-                                  Icons.search,
-                                  size: 50,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const Center(
-                          child: Text(
-                            'Found',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: primaryColor,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 32,
-                  ),
-                ],
-              ),
+            DogStatusScreen(
+              dogStatus: dogStatus,
+              dogAccountsLength: dogAccountsLength,
+              controller: controller,
+              colorController: _colorController,
+              dogBreedController: _dogBreedController,
+              descriptionController: _descriptionController,
+              changeStatus: changeStatus,
+              onTap: changeDogImage,
             ),
-            scanning == 'scanning'
-                //
-                //
-                // IF ML SET TO SCANNING SHOW ML SCREEN
-                //
-                //
-                ? Scaffold(
-                    appBar: AppBar(
-                      backgroundColor: mobileBackgroundColor,
-                      leading: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            scanning = '';
-                          });
-                        },
-                      ),
-                      title: const Text('Scanning dog breed'),
-                      centerTitle: false,
-                    ),
-                    //Show image
-                    body: ListView(
-                      children: [
-                        (imageSelect)
-                            ?
-                            //if imageSelect has data show image
-                            Container(
-                                margin: const EdgeInsets.all(10),
-                                child: Image.file(_image),
-                              )
-                            :
-                            //else if imageSelect doesnt have data show No image selected message
-                            Container(
-                                margin: const EdgeInsets.all(10),
-                                child: const Opacity(
-                                  opacity: 0.8,
-                                  child: Center(
-                                    child: Text('No image selected'),
-                                  ),
-                                ),
-                              ),
-                        //Show ML model results that are clickable
-                        SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Column(
-                                children: (imageSelect)
-                                    ? _results.map(
-                                        (result) {
-                                          return InkWell(
-                                            onTap: () {
-                                              _dogBreedController.text =
-                                                  "${result['label']}";
-                                              setState(() {
-                                                scanning = '';
-                                              });
-                                            },
-                                            child: Card(
-                                              child: Container(
-                                                margin: EdgeInsets.all(10),
-                                                child: Text(
-                                                  "${result['label']} - ${result['confidence'].toStringAsFixed(2)} %",
-                                                  style: const TextStyle(
-                                                    color: accentColor,
-                                                    fontSize: 20,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ).toList()
-                                    : [],
-                              ),
-                              Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      _dogBreedController.text = "Mix";
-                                      setState(() {
-                                        scanning = '';
-                                      });
-                                    },
-                                    child: Card(
-                                      child: Container(
-                                        margin: EdgeInsets.all(10),
-                                        child: const Text(
-                                          "Mix",
-                                          style: TextStyle(
-                                            color: accentColor,
-                                            fontSize: 20,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      _dogBreedController.text = "Undefined";
-                                      setState(() {
-                                        scanning = '';
-                                      });
-                                    },
-                                    child: Card(
-                                      child: Container(
-                                        margin: EdgeInsets.all(10),
-                                        child: const Text(
-                                          "Undefined",
-                                          style: TextStyle(
-                                            color: accentColor,
-                                            fontSize: 20,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                height: 60,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Scaffold(
-                    appBar: AppBar(
-                      backgroundColor: mobileBackgroundColor,
-                      leading: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                        ),
-                        onPressed: () {
-                          controller.animateToPage(
-                            0,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.ease,
-                          );
-                        },
-                      ),
-                      title: Text("$dogStatus Dog details"),
-                      centerTitle: false,
-                    ),
-                    body: Container(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 24,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextFieldInput(
-                                    textEditingController: _dogBreedController,
-                                    hintText: 'Enter dog breed',
-                                    textInputType: TextInputType.text,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 24,
-                                        backgroundColor: accentColor,
-                                        child: IconButton(
-                                          onPressed: () {
-                                            SelectImageType();
-                                          },
-                                          icon: const Icon(
-                                            Icons.camera_alt_rounded,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                      const Text('Scan a dog')
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            //text field for dog breed
-
-                            const SizedBox(
-                              height: 24,
-                            ),
-
-                            //text field for email
-                            TextFieldInput(
-                              textEditingController: _colorController,
-                              hintText: 'What color is the dog',
-                              textInputType: TextInputType.emailAddress,
-                            ),
-                            const SizedBox(
-                              height: 24,
-                            ),
-
-                            //text field for bio
-                            TextFieldInput(
-                              textEditingController: _descriptionController,
-                              hintText: 'Enter a description',
-                              textInputType: TextInputType.text,
-                              maxLines: 8,
-                            ),
-                            const SizedBox(
-                              height: 24,
-                            ),
-
-                            //buttom for login
-                            InkWell(
-                              onTap: () {
-                                if (_dogBreedController.text == '' ||
-                                    _colorController.text == '' ||
-                                    _descriptionController.text == '') {
-                                  showSnackBar(
-                                      'Please enter all details', context);
-                                } else {
-                                  setState(() {
-                                    FocusScope.of(context)
-                                        .requestFocus(new FocusNode());
-                                    controller.animateToPage(
-                                      2,
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      curve: Curves.ease,
-                                    );
-                                  });
-                                }
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                alignment: Alignment.center,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                decoration: const ShapeDecoration(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(4),
-                                      ),
-                                    ),
-                                    color: accentColor),
-                                child: _isLoading
-                                    ? const Center(
-                                        child: CircularProgressIndicator(
-                                          color: primaryColor,
-                                        ),
-                                      )
-                                    : const Text('Enter details'),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            Flexible(
-                              flex: 2,
-                              child: Container(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-            Scaffold(
-              appBar: AppBar(
-                backgroundColor: mobileBackgroundColor,
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                  ),
-                  onPressed: () {
-                    controller.animateToPage(
-                      1,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.ease,
-                    );
-                  },
-                ),
-                title: Text("${dogStatus} Dog Location"),
-                centerTitle: false,
-                actions: [
-                  dogLocation != LatLng(0, 0)
-                      ? TextButton(
-                          onPressed: () {
-                            controller.animateToPage(
-                              3,
-                              duration: const Duration(milliseconds: 200),
-                              curve: Curves.ease,
-                            );
-                          },
-                          child: const Text(
-                            'Add Location',
-                            style: TextStyle(
-                              color: Colors.blueAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ))
-                      : Container()
-                ],
-              ),
-              body: _currentLocation == null
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: primaryColor,
-                      ),
-                    )
-                  : GoogleMap(
-                      zoomControlsEnabled: false,
-                      mapType: MapType.normal,
-                      markers: Set.from(myMarker),
-                      myLocationEnabled: true,
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(_currentLocation!.latitude!,
-                            _currentLocation!.longitude!),
-                        zoom: 15,
-                      ),
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-                      },
-                      onTap: _handleTap,
-                    ),
+            PickDogAccountsScreen(
+              controller: controller,
+              dogStatus: dogStatus,
+              dogAccountsLength: dogAccountsLength,
+              colorController: _colorController,
+              dogBreedController: _dogBreedController,
+              descriptionController: _descriptionController,
+              changeDogImage: changeDogImage,
             ),
-            _file == null
-                ? Scaffold(
-                    appBar: AppBar(
-                      backgroundColor: mobileBackgroundColor,
-                      leading: IconButton(
-                        icon: Icon(
-                          Icons.arrow_back,
-                        ),
-                        onPressed: () {
-                          controller.animateToPage(
-                            2,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.ease,
-                          );
-                        },
-                      ),
-                      title: Text("Image for the ${dogStatus} Dog"),
-                      centerTitle: false,
-                    ),
-                    body: Center(
-                      child: IconButton(
-                        icon: const Icon(Icons.upload),
-                        onPressed: () => _selectImage(context),
-                      ),
-                    ),
-                  )
-                : Scaffold(
-                    appBar: AppBar(
-                      backgroundColor: mobileBackgroundColor,
-                      leading: IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: clearImage,
-                      ),
-                      title: Text("Post ${dogStatus} Dog"),
-                      centerTitle: false,
-                      actions: [
-                        TextButton(
-                            onPressed: () => postImage(
-                                user.uid, user.username, user.photoUrl),
-                            child: const Text(
-                              'Post',
-                              style: TextStyle(
-                                color: Colors.blueAccent,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ))
-                      ],
-                    ),
-
-                    //Body section
-                    body: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        child: Column(
-                          children: [
-                            _isLoading
-                                ? const LinearProgressIndicator(
-                                    color: primaryColor,
-                                  )
-                                : const Padding(
-                                    padding: EdgeInsets.only(top: 0),
-                                  ),
-                            const Divider(
-                              color: Colors.grey,
-                            ),
-                            Container(
-                              margin: const EdgeInsets.all(10),
-                              child: Image.memory(_file!),
-                            ),
-                            const Divider(
-                              color: Colors.grey,
-                            ),
-                            Text('Dog Breed:'),
-                            SizedBox(
-                              child: TextField(
-                                controller: _dogBreedController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Dog Breed ...',
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            const Divider(
-                              color: Colors.grey,
-                            ),
-                            Text('Dog Color:'),
-                            SizedBox(
-                              child: TextField(
-                                controller: _colorController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Dog Color ...',
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            const Divider(
-                              color: Colors.grey,
-                            ),
-                            Text('Dog Description:'),
-                            SizedBox(
-                              child: TextField(
-                                controller: _descriptionController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Dog Description ...',
-                                  border: InputBorder.none,
-                                ),
-                                maxLines: 5,
-                              ),
-                            ),
-                            const Divider(
-                              color: Colors.grey,
-                            ),
-                            Text('Dog Location:'),
-                            SizedBox(
-                              height: 300,
-                              width: 300,
-                              child: GoogleMap(
-                                mapType: MapType.normal,
-                                zoomControlsEnabled: false,
-                                markers: {
-                                  Marker(
-                                    infoWindow:
-                                        InfoWindow(title: 'Dog Postion'),
-                                    markerId: MarkerId("dogLocation"),
-                                    position: LatLng(dogLocation.latitude,
-                                        dogLocation.longitude),
-                                  )
-                                },
-                                initialCameraPosition: CameraPosition(
-                                  target: LatLng(dogLocation.latitude,
-                                      dogLocation.longitude),
-                                  zoom: 13,
-                                ),
-                                onMapCreated: (GoogleMapController controller) {
-                                  _controller.complete(controller);
-                                },
-                              ),
-                            ),
-                            Container(
-                              height: 150,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+            DogDetailsScreen(
+              scanning: scanning,
+              imageSelect: imageSelect,
+              isLoading: _isLoading,
+              image: _image,
+              results: _results,
+              controller: controller,
+              dogBreedController: _dogBreedController,
+              descriptionController: _descriptionController,
+              colorController: _colorController,
+              dogStatus: dogStatus,
+              dogAccountsLength: dogAccountsLength,
+              SelectImageType: SelectImageType,
+              labels: labels,
+            ),
+            DogLocationScreen(
+              dogStatus: dogStatus,
+              controller: controller,
+              dogBreedController: _dogBreedController,
+              currentLocation: globalCurrentLocation!,
+              dogLocation: dogLocation,
+              onTap: _handleTap,
+              myMarker: myMarker,
+            ),
+            ConfirmDogPost(
+              file: _file,
+              dogStatus: dogStatus,
+              isLoading: _isLoading,
+              controller: controller,
+              dogBreedController: _dogBreedController,
+              colorController: _colorController,
+              descriptionController: _descriptionController,
+              dogLocation: dogLocation,
+              dogAccountImage: dogAccountImage,
+              labels: labels,
+            ),
+            PostSuccessScreen(
+              controller: controller,
+              dogStatus: dogStatus,
+              reset: reset,
+            ),
+            PhoneNumberScreen(
+              controller: controller,
+              reset: reset,
+              dogBreed: _dogBreedController.text,
+              dogLocation: dogLocation,
+            ),
           ],
         ),
       ],
     );
-  }
-
-  _handleTap(LatLng tappedPoint) {
-    setState(
-      () {
-        myMarker = [];
-        myMarker.add(
-          Marker(
-            markerId: MarkerId(
-              tappedPoint.toString(),
-            ),
-            position: tappedPoint,
-            draggable: true,
-            onDragEnd: (dragEndPosition) {
-              print(dragEndPosition);
-            },
-            icon: dogStatus == 'Found'
-                ? BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueGreen)
-                : BitmapDescriptor.defaultMarker,
-            infoWindow:
-                InfoWindow(title: '${dogStatus} ${_dogBreedController.text}'),
-          ),
-        );
-        dogLocation = tappedPoint;
-      },
-    );
-    //getLocation();
   }
 }

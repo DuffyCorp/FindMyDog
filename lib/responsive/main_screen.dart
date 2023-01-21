@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:find_my_dog/providers/location_provider.dart';
 import 'package:find_my_dog/responsive/responsive_layout_screen.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +25,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  LocationData? currentLocation;
+  final geo = Geoflutterfire();
+
+  //CHANGE FOR FINAL MODE, WILL ENABLE FIREBASE TO TRACK LIVE DATA
+  bool testing = true;
+
   void getLocation() async {
     final provider = LocationProvider();
     final locationData = await provider.getLocation();
@@ -32,6 +40,23 @@ class _MainScreenState extends State<MainScreen> {
         currentLocation = locationData;
       });
     }
+
+    Location location = new Location();
+
+    location.onLocationChanged.listen((LocationData cLoc) {
+      currentLocation = cLoc;
+      GeoFirePoint myLocation = geo.point(
+          latitude: currentLocation!.latitude!,
+          longitude: currentLocation!.longitude!);
+
+//FOR PUBLIC MODE DONT ENABLE IN TESTING will spam firebase
+      if (testing == false) {
+        FirebaseFirestore.instance
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({"position": myLocation.data});
+      }
+    });
   }
 
   @override

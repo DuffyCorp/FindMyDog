@@ -40,7 +40,6 @@ class _PostScreenState extends State<PostScreen> {
   bool isLikeAnimating = false;
   bool showDetails = false;
   double distance = 0;
-  LocationData? _currentLocation;
   LatLng? position;
   final Completer<GoogleMapController> _controller = Completer();
   var snap;
@@ -64,13 +63,12 @@ class _PostScreenState extends State<PostScreen> {
         if (snap['dogStatus'] == 'Found') {
           isLost = accentColor;
         }
+        if (snap['dogStatus'] == 'Lost') {
+          isLost = Colors.amber;
+        }
       });
       getData();
-      if (currentLocation == null) {
-        getCurrentLocation();
-      } else {
-        _currentLocation = currentLocation;
-      }
+
       getDistance();
     } else {
       // set widget.snap to data
@@ -85,19 +83,6 @@ class _PostScreenState extends State<PostScreen> {
     }
   }
 
-  void getCurrentLocation() async {
-    Location location = Location();
-
-    location.getLocation().then(
-      (newLocation) {
-        setState(() {
-          _currentLocation = newLocation;
-          currentLocation = newLocation;
-        });
-      },
-    );
-  }
-
   void getDistance() async {
     GeoPoint geoPoint = snap['dogLocation']['geopoint'];
 
@@ -105,8 +90,8 @@ class _PostScreenState extends State<PostScreen> {
     double newDistance = calculateDistance(
       position!.latitude,
       position!.longitude,
-      _currentLocation!.latitude,
-      _currentLocation!.longitude,
+      globalCurrentLocation!.latitude,
+      globalCurrentLocation!.longitude,
     );
     setState(() {
       distance = newDistance;
@@ -628,18 +613,24 @@ class _PostScreenState extends State<PostScreen> {
                                                           markerId:
                                                               const MarkerId(
                                                                   "dogLocation"),
-                                                          icon: (snapshot.data!
-                                                                              as dynamic)
-                                                                          .docs[index]
-                                                                      [
+                                                          icon: (snapshot.data! as dynamic)
+                                                                          .docs[index][
                                                                       'dogStatus'] ==
-                                                                  'Found'
+                                                                  'Lost'
                                                               ? BitmapDescriptor
                                                                   .defaultMarkerWithHue(
                                                                       BitmapDescriptor
-                                                                          .hueGreen)
-                                                              : BitmapDescriptor
-                                                                  .defaultMarker,
+                                                                          .hueOrange)
+                                                              : (snapshot.data! as dynamic).docs[index]
+                                                                          [
+                                                                          'dogStatus'] ==
+                                                                      'Found'
+                                                                  ? BitmapDescriptor
+                                                                      .defaultMarkerWithHue(
+                                                                          BitmapDescriptor
+                                                                              .hueGreen)
+                                                                  : BitmapDescriptor
+                                                                      .defaultMarker,
                                                           position: LatLng(
                                                             position!.latitude,
                                                             position!.longitude,

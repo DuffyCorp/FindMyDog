@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:find_my_dog/models/payload.dart';
@@ -336,6 +337,7 @@ class _MobileScreenLayout extends State<MobileScreenLayout> {
       floatingActionButton: FloatingActionButton(
         splashColor: Colors.blue,
         onPressed: () {
+          HapticFeedback.lightImpact();
           navigationTapped(2);
         },
         child: const Icon(
@@ -364,6 +366,7 @@ class _MobileScreenLayout extends State<MobileScreenLayout> {
           children: [
             IconButton(
               onPressed: () {
+                HapticFeedback.lightImpact();
                 navigationTapped(0);
               },
               icon: Icon(
@@ -373,6 +376,7 @@ class _MobileScreenLayout extends State<MobileScreenLayout> {
             ),
             IconButton(
               onPressed: () {
+                HapticFeedback.lightImpact();
                 navigationTapped(1);
               },
               icon: Icon(
@@ -386,6 +390,7 @@ class _MobileScreenLayout extends State<MobileScreenLayout> {
             ),
             IconButton(
               onPressed: () {
+                HapticFeedback.lightImpact();
                 navigationTapped(3);
               },
               icon: Icon(
@@ -395,6 +400,7 @@ class _MobileScreenLayout extends State<MobileScreenLayout> {
             ),
             IconButton(
               onPressed: () {
+                HapticFeedback.lightImpact();
                 navigationTapped(4);
               },
               icon: Icon(

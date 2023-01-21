@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:find_my_dog/models/dogAccount.dart';
 import 'package:find_my_dog/utils/global_variables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart';
@@ -22,7 +23,7 @@ class FirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String? api = dotenv.env['FCM_API_KEY'];
+  String? notifApi = dotenv.env['FCM_API_KEY'];
 
   String? w3wApi = dotenv.env['WHAT3WORDSKEY'];
 
@@ -39,22 +40,81 @@ class FirestoreMethods {
     return address;
   }
 
-  Stream<List<DocumentSnapshot<Object?>>> getNearbyUsers(
+  Future<List<DocumentSnapshot<Object?>>> getNearbyUsers(
     LatLng centerPoint,
-  ) {
+  ) async {
+    // GeoFirePoint center = geo.point(
+    //     latitude: centerPoint.latitude, longitude: centerPoint.longitude);
+
+    // var collectionReference = _firestore.collection('users');
+
+    // // 5 miles in km a.k.a 8km
+    // double radius = 8;
+    // String field = 'position';
+
+    // Stream<List<DocumentSnapshot<Object?>>> users = geo
+    //     .collection(collectionRef: collectionReference)
+    //     .within(center: center, radius: radius, field: field, strictMode: true);
+
+    // return users;
+    List<DocumentSnapshot<Object?>> ret = [];
+
     GeoFirePoint center = geo.point(
         latitude: centerPoint.latitude, longitude: centerPoint.longitude);
+    await geo
+        .collection(collectionRef: _firestore.collection("users"))
+        .within(center: center, radius: 8, field: 'position')
+        .first
+        .then((docs) {
+      Future.forEach(docs, (DocumentSnapshot doc) {
+        // parse place
+        ret.add(doc);
+      }).whenComplete(() {
+        return;
+      });
+    });
+    return ret;
+  }
 
-    var collectionReference = _firestore.collection('users');
+  Future<String> uploadDogAccount(
+    String dogBreed,
+    String dogColor,
+    String description,
+    Uint8List file,
+  ) async {
+    String res = "some error occurred";
+    try {
+      //create dogAccount id
+      String dogID = const Uuid().v1();
 
-    double radius = 50;
-    String field = 'position';
+      String photoUrl =
+          await StorageMethods().uploadImageToStorage('posts', file, true);
 
-    Stream<List<DocumentSnapshot<Object?>>> users = geo
-        .collection(collectionRef: collectionReference)
-        .within(center: center, radius: radius, field: field, strictMode: true);
+      //create post
+      DogAccount dogAccount = DogAccount(
+        ownerID: _auth.currentUser!.uid,
+        dogBreed: dogBreed,
+        dogColor: dogColor,
+        description: description,
+        file: photoUrl,
+        uid: dogID,
+      );
 
-    return users;
+      //Add post to database
+      _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection("dogs")
+          .doc(dogID)
+          .set(
+            dogAccount.toJson(),
+          );
+
+      res = "success";
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
   }
 
   //upload posts to firestore
@@ -64,16 +124,22 @@ class FirestoreMethods {
       String dogColor,
       LatLng dogLocation,
       String description,
-      Uint8List file,
+      Uint8List? file,
       String uid,
       String username,
-      String profImage) async {
+      String profImage,
+      [String dogAccountImage = ""]) async {
     //set default error message
     String res = "some error occurred";
     try {
-      //store photo in firebase storage and get downloadable url link
-      String photoUrl =
-          await StorageMethods().uploadImageToStorage('posts', file, true);
+      String photoUrl = "";
+      if (dogAccountImage != "") {
+        photoUrl = dogAccountImage;
+      } else {
+        //store photo in firebase storage and get downloadable url link
+        photoUrl =
+            await StorageMethods().uploadImageToStorage('posts', file!, true);
+      }
 
       var api = w3w.What3WordsV3(w3wApi.toString());
 
@@ -142,36 +208,30 @@ class FirestoreMethods {
     return 12742 * asin(sqrt(a));
   }
 
-  void sendNotifNearByAll(LatLng centerPoint, String ID) {
+  void sendNotifNearByAll(LatLng centerPoint, String ID) async {
     try {
-      Stream<List<DocumentSnapshot<Object?>>> users =
-          getNearbyUsers(centerPoint);
+      List<DocumentSnapshot<Object?>> users = await getNearbyUsers(centerPoint);
 
-      users.listen((List<DocumentSnapshot> documentList) {
-        // doSomething()
-        documentList.forEach((DocumentSnapshot document) {
-          final data = document.data() as Map<String, dynamic>;
-          print(document.data());
-          print(data["distance"]);
-          if (data["uid"] != _auth.currentUser!.uid) {
-            if (data["deviceToken" != "unavailable"]) {
-              final String name = data["username"];
-              print(name);
+      users.forEach((DocumentSnapshot document) {
+        final data = document.data() as Map<String, dynamic>;
 
-              var notifData = {
-                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                'id': '1',
-                'status': 'done',
-                'screen': 'post',
-                'uid': ID,
-              };
-              sendPushMessage(
-                  data["deviceToken"], "Lost Dog Near by", 'Find My Dog', data);
-            } else {
-              //SEND TEXT
-            }
+        if (data["uid"] != _auth.currentUser!.uid) {
+          if (data["deviceToken"].toString() != "unavailable") {
+            final String name = data["username"];
+
+            var notifData = {
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done',
+              'screen': 'post',
+              'uid': ID,
+            };
+            sendPushMessage(data["deviceToken"], "Lost Dog Near by",
+                'Find My Dog', notifData);
+          } else {
+            //SEND TEXT
           }
-        });
+        }
       });
     } catch (err) {
       print(err.toString());
@@ -194,10 +254,6 @@ class FirestoreMethods {
         err.toString(),
       );
     }
-
-    sendNotifNearByAll(
-        LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-        postId);
 
     try {
       DocumentSnapshot snap =
@@ -442,7 +498,7 @@ class FirestoreMethods {
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'key=${api}',
+          'Authorization': 'key=$notifApi',
         },
         body: jsonEncode(
           <String, dynamic>{
@@ -455,6 +511,7 @@ class FirestoreMethods {
       );
     } catch (e) {
       print("error push notification");
+      print("ERROR $e");
     }
   }
 

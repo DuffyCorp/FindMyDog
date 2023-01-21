@@ -9,7 +9,7 @@ import 'package:location/location.dart';
 //change breakpoint for web application globally
 const webScreenSize = 600;
 
-LocationData? currentLocation;
+LocationData? globalCurrentLocation;
 
 List<Widget> homeScreenItems = [
   const HomeScreen(),

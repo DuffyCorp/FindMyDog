@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:find_my_dog/screens/chat_screen.dart';
 import 'package:find_my_dog/screens/new_chat_screen.dart';
 import 'package:find_my_dog/widgets/message_subtitle.dart';
+import 'package:flutter/services.dart';
 
 import '../utils/colors.dart';
 
@@ -47,6 +48,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             Icons.arrow_back,
           ),
           onPressed: () {
+            HapticFeedback.lightImpact();
             widget.controller.animateToPage(
               0,
               duration: const Duration(milliseconds: 200),
@@ -62,6 +64,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               Icons.add_box_outlined,
             ),
             onPressed: () {
+              HapticFeedback.lightImpact();
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => NewChat(),
@@ -143,6 +146,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () async {
+                    HapticFeedback.lightImpact();
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ChatScreen(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:find_my_dog/screens/profile_screen.dart';
 import 'package:find_my_dog/utils/colors.dart';
 import 'package:find_my_dog/widgets/new_message_widget.dart';
+import 'package:flutter/services.dart';
 
 import '../utils/utils.dart';
 import '../widgets/messages_widget.dart';
@@ -83,6 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Icons.arrow_back,
                 ),
                 onPressed: () async {
+                  HapticFeedback.lightImpact();
                   Navigator.pop(context);
                   await FirebaseFirestore.instance
                       .collection('users')
@@ -96,6 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               title: GestureDetector(
                   onTap: () {
+                    HapticFeedback.lightImpact();
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ProfileScreen(

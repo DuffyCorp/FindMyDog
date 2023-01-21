@@ -10,6 +10,7 @@ class User {
   final String bio;
   final List followers;
   final List following;
+  final int messagesNotification;
 
   const User({
     required this.email,
@@ -19,6 +20,7 @@ class User {
     required this.bio,
     required this.followers,
     required this.following,
+    required this.messagesNotification,
   });
 
   //Converts user model to Json format
@@ -30,6 +32,7 @@ class User {
         "bio": bio,
         "followers": followers,
         "following": following,
+        "messageNotification": messagesNotification,
       };
 
   //gets all user details from a snapshot
@@ -39,13 +42,13 @@ class User {
 
     //return all data formatted for use
     return User(
-      username: snapshot['username'],
-      uid: snapshot['uid'],
-      email: snapshot['email'],
-      photoUrl: snapshot['photoUrl'],
-      bio: snapshot['bio'],
-      followers: snapshot['followers'],
-      following: snapshot['following'],
-    );
+        username: snapshot['username'],
+        uid: snapshot['uid'],
+        email: snapshot['email'],
+        photoUrl: snapshot['photoUrl'],
+        bio: snapshot['bio'],
+        followers: snapshot['followers'],
+        following: snapshot['following'],
+        messagesNotification: snapshot['messagesNotification'].toInt());
   }
 }
