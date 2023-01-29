@@ -1,10 +1,133 @@
-Beagle
-Boxer
-Chihuahua
-Dalmation
-German Shepard
-Great Dane
-Greyhound
-Labrador Retriever
-Miniature Schnauzer
-Pomeranian
+0 Affenpinscher
+1 Afghan hound
+2 Airedale terrier
+3 Akita
+4 Alaskan malamute
+5 American eskimo dog
+6 American foxhound
+7 American Staffordshire terrier
+8 American water spaniel
+9 Anatolian Shepard dog
+10 Australian cattle dog
+11 Australian shepherd
+12 Australian terrier
+13 Basenji
+14 Basset hound
+15 Beagle
+16 Bearded collie
+17 Beauceron
+18 Bedlington terrier
+19 Belgian malinois
+20 Belgian sheepdog
+21 Belgian tervuren
+22 Bernese mountain dog
+23 Bichon frise
+24 Black and tan coonhound
+25 Black Russian terrier
+26 Bloodhound
+27 Bluetick coonhound
+28 Border collie
+29 Border terrier
+30 Borzoi
+31 Boston terrier
+32 Bouvier des flandres
+33 Boxer
+34 Boykin spaniel
+35 Briard
+36 Brittany
+37 Brussels griffon
+38 Bull terrier
+39 Bulldog
+40 Bullmastiff
+41 Cairn terrier
+42 Canaan dog
+43 Cane corso
+44 Cardigan welsh corgi
+45 Cavalier king charles spaniel
+46 Chesapeake bay retriever
+47 Chihuahua
+48 Chinese crested
+49 Chinese shar-pei
+50 Chow chow
+51 Clumber spaniel
+52 Cocker spaniel
+53 Collie
+54 Curly coated retriever
+55 Dachshund
+56 Dalmatian
+57 Dandie dinmont terrier
+58 Doberman pinscher
+59 Dogue de bordeux
+60 English cocker spaniel
+61 English setter
+62 English springer spaniel
+63 English toy spaniel
+64 Entlebucher mountain dog
+65 Field spaniel
+66 Finnish spitz
+67 Flat coated retriever
+68 French bulldog
+69 German pinscher
+70 German shepherd
+71 German shorthaired pointer
+72 German wirehaired pointer
+73 Giant schnauzer
+74 Glen of imaal terrier
+75 Golden retriever
+76 Gordon setter
+77 Great dane
+78 Great pyrenees
+79 Greater swiss mountain dog
+80 Greyhound
+81 Havanese
+82 Ibizan hound
+83 Icelandic sheepdog
+84 Irish red and white setter
+85 Irish setter
+86 Irish terrier
+87 Irish water spaniel
+88 Irish wolfhound
+89 Italian greyhound
+90 Japanese chin
+91 Keeshond
+92 Kerry blue terrier
+93 Komondor
+94 Kuvasz
+95 Labrador retriever
+96 Lakeland terrier
+97 Leonberger
+98 Lhasa Apso
+99 Lowchen
+100 Maltese
+101 Manchester terrier
+102 Mastiff
+103 Miniature schnauzer
+104 Neapolitan mastiff
+105 Newfoundland
+106 Norfolk terrier
+107 Norwegian buhund
+108 Norwegian elkhound
+109 Norwegian lundehund
+110 Norwich terrier
+111 Nova scotia duck tolling retriever
+112 Old english sheepdog
+113 Otterhound
+114 Papillon
+115 Parson russel terrier
+116 Pekingese
+117 Pembroke welsh corgi
+118 Petit basset griffon vendeen
+119 Pharaoh hound
+120 Plott
+121 Pointer
+122 Pomeranian
+123 Poodle
+124 Portuguese water dog
+125 Saint bernard
+126 Silky terrier
+127 Smooth fox terrier
+128 Tibetan mastiff
+129 Welsh springer spaniel
+130 Wirehaired pointing griffon
+131 Xoloitzcuintli
+132 Yorkshire terrier

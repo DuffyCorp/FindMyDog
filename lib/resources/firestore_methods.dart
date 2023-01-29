@@ -128,6 +128,7 @@ class FirestoreMethods {
       String uid,
       String username,
       String profImage,
+      String postId,
       [String dogAccountImage = ""]) async {
     //set default error message
     String res = "some error occurred";
@@ -150,9 +151,6 @@ class FirestoreMethods {
           .execute();
 
       print('Words: ${words.data()?.toJson()["words"]}');
-
-      //create post id
-      String postId = const Uuid().v1();
 
       List<Placemark> placemarks = await placemarkFromCoordinates(
           dogLocation.latitude, dogLocation.longitude);

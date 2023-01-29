@@ -76,6 +76,7 @@ class _SwipeScreenState extends State<SwipeScreen>
   Uint8List? _file;
   List<String> labels = [];
   String dogAccountImage = "";
+  String createdID = "";
 
   void reset() {
     dogStatus = '';
@@ -120,44 +121,6 @@ class _SwipeScreenState extends State<SwipeScreen>
     location != ''
         ? showSnackBar(location, context)
         : showSnackBar('empty', context);
-  }
-
-  void postImage(
-    String uid,
-    String username,
-    String profImage,
-  ) async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      String res = await FirestoreMethods().uploadPost(
-        dogStatus,
-        _dogBreedController.text,
-        _colorController.text,
-        dogLocation,
-        _descriptionController.text,
-        _file!,
-        uid,
-        username,
-        profImage,
-      );
-
-      if (res == "success") {
-        setState(() {
-          _isLoading = false;
-        });
-        showSnackBar('Posted!', context);
-        clearImage();
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        showSnackBar(res, context);
-      }
-    } catch (err) {
-      showSnackBar(err.toString(), context);
-    }
   }
 
   void clearImage() {
@@ -248,9 +211,9 @@ class _SwipeScreenState extends State<SwipeScreen>
 
     final loadedLabels = await rootBundle.loadString("assets/labels.txt");
 
-    loadedLabels.replaceAll(new RegExp(r"/d"), "");
+    String noNumbers = loadedLabels.replaceAll(RegExp(r"\d+"), "");
 
-    List<String> convertedLabels = lineSplitter.convert(loadedLabels);
+    List<String> convertedLabels = lineSplitter.convert(noNumbers);
 
     convertedLabels.addAll(["Mix", "Undefined"]);
 
@@ -327,6 +290,13 @@ class _SwipeScreenState extends State<SwipeScreen>
     });
   }
 
+  void changeID(String value) {
+    setState(() {
+      createdID = value;
+    });
+    print("TESTING " + value);
+  }
+
   void changeDogImage(String value) {
     setState(() {
       dogAccountImage = value;
@@ -398,6 +368,7 @@ class _SwipeScreenState extends State<SwipeScreen>
               dogLocation: dogLocation,
               dogAccountImage: dogAccountImage,
               labels: labels,
+              changeID: changeID,
             ),
             PostSuccessScreen(
               controller: controller,
@@ -409,6 +380,7 @@ class _SwipeScreenState extends State<SwipeScreen>
               reset: reset,
               dogBreed: _dogBreedController.text,
               dogLocation: dogLocation,
+              postID: createdID,
             ),
           ],
         ),

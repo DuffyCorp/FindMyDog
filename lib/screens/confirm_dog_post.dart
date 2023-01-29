@@ -13,6 +13,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class ConfirmDogPost extends StatefulWidget {
   Uint8List? file;
@@ -25,6 +26,7 @@ class ConfirmDogPost extends StatefulWidget {
   LatLng dogLocation;
   String dogAccountImage;
   List<String> labels;
+  final changeID;
 
   ConfirmDogPost({
     super.key,
@@ -38,6 +40,7 @@ class ConfirmDogPost extends StatefulWidget {
     required this.dogLocation,
     required this.dogAccountImage,
     required this.labels,
+    required this.changeID,
   });
 
   @override
@@ -46,6 +49,8 @@ class ConfirmDogPost extends StatefulWidget {
 
 class _ConfirmDogPostState extends State<ConfirmDogPost> {
   final Completer<GoogleMapController> _controller = Completer();
+  //create post id
+  String postId = const Uuid().v1();
   void postImage(
     String uid,
     String username,
@@ -70,6 +75,7 @@ class _ConfirmDogPostState extends State<ConfirmDogPost> {
           uid,
           username,
           profImage,
+          postId,
           widget.dogAccountImage,
         );
       } else {
@@ -83,13 +89,15 @@ class _ConfirmDogPostState extends State<ConfirmDogPost> {
           uid,
           username,
           profImage,
+          postId,
         );
       }
-
+      widget.changeID(postId);
       if (res == "success") {
         setState(() {
           widget.isLoading = false;
         });
+
         showSnackBar('Posted!', context);
         clearImage();
       } else {

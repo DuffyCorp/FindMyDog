@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:find_my_dog/utils/colors.dart';
 import 'package:find_my_dog/utils/utils.dart';
 import 'package:find_my_dog/widgets/text_field_input.dart';
@@ -20,6 +21,7 @@ class PhoneNumberScreen extends StatefulWidget {
   final reset;
   final String dogBreed;
   final LatLng dogLocation;
+  final String postID;
 
   const PhoneNumberScreen({
     super.key,
@@ -27,6 +29,7 @@ class PhoneNumberScreen extends StatefulWidget {
     required this.reset,
     required this.dogBreed,
     required this.dogLocation,
+    required this.postID,
   });
 
   @override
@@ -155,7 +158,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
     twilioFlutter.sendSMS(
         toNumber: phoneController.text,
         messageBody:
-            "We've had a report of a lost ${widget.dogBreed}.\n\nYou can download the FindMyDog app to view the post, If you do not have the app here are the what 3 words of the location it was found.\n\n${words.data()?.toJson()["words"]}\n${words.data()?.toJson()["map"]}\n\nIf you do not own a dog of this breed, please ignore this message.");
+            "We've had a report of a lost ${widget.dogBreed}.\n\nYou can download the FindMyDog app to view the post, If you do not have the app here are the what 3 words of the location it was found.\n\n${words.data()?.toJson()["words"]}\nhttps://find-my-dog-web.vercel.app/${widget.postID}\n\nIf you do not own a dog of this breed, please ignore this message.");
 
     setState(() {
       showSMS = false;
@@ -439,7 +442,7 @@ table.body .article {
                       <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">We've had a report!</p>
                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">We've had a report of a lost ${widget.dogBreed}.</p>
-                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">You can download the FindMyDog app to view the post, If you do not have the app here are the what 3 words of the location it was found.</p>
+                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">You can download the FindMyDog app to view the post, If you do not have the app is a link to view the post.</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; box-sizing: border-box; width: 100%;" width="100%">
                           <tbody>
                             <tr>
@@ -447,7 +450,7 @@ table.body .article {
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
                                   <tbody>
                                     <tr>
-                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; border-radius: 5px; text-align: center; text-transform: capitalize; background-color: #05AD05;" valign="top" align="center" bgcolor="#05AD05"> <a href="${words.data()?.toJson()["map"]}" target="_blank" style="border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-decoration: none; background-color: #05AD05; border-color: #05AD05; color: #ffffff;">${words.data()?.toJson()["words"]}</a> </td>
+                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; border-radius: 5px; text-align: center; text-transform: capitalize; background-color: #05AD05;" valign="top" align="center" bgcolor="#05AD05"> <a href="https://find-my-dog-web.vercel.app/${widget.postID}" target="_blank" style="border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-decoration: none; background-color: #05AD05; border-color: #05AD05; color: #ffffff;">View</a> </td>
                                     </tr>
                                   </tbody>
                                 </table>

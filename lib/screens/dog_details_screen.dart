@@ -100,10 +100,12 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                         children: (widget.imageSelect)
                             ? widget.results.map(
                                 (result) {
+                                  String text = result['label']
+                                      .toString()
+                                      .replaceAll(RegExp(r"\d+"), "");
                                   return InkWell(
                                     onTap: () {
-                                      widget.dogBreedController.text =
-                                          "${result['label']}";
+                                      widget.dogBreedController.text = text;
                                       setState(() {
                                         widget.scanning = '';
                                       });
@@ -112,7 +114,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                                       child: Container(
                                         margin: EdgeInsets.all(10),
                                         child: Text(
-                                          "${result['label']} - ${result['confidence'].toStringAsFixed(2)} %",
+                                          "${text} - ${result['confidence'].toStringAsFixed(2)} %",
                                           style: const TextStyle(
                                             color: accentColor,
                                             fontSize: 20,
