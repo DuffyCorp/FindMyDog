@@ -56,6 +56,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
         //
         //
         ? Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
               leading: IconButton(
@@ -181,6 +182,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
             ),
           )
         : Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
               leading: IconButton(
@@ -210,135 +212,138 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
             body: Container(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Row(
-                      children: [
-                        // Expanded(
-                        //   child: TextFieldInput(
-                        //     textEditingController: widget.dogBreedController,
-                        //     hintText: 'Enter dog breed',
-                        //     textInputType: TextInputType.text,
-                        //   ),
-                        // ),
-                        Expanded(
-                          child: DropdownSearch<String>(
-                            popupProps: const PopupProps.menu(
-                              showSelectedItems: true,
-                              showSearchBox: true,
-                            ),
-                            items: widget.labels,
-                            dropdownDecoratorProps:
-                                const DropDownDecoratorProps(
-                              dropdownSearchDecoration: InputDecoration(
-                                labelText: "Dog breed",
-                                hintText: "Select a dog breed",
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Row(
+                        children: [
+                          // Expanded(
+                          //   child: TextFieldInput(
+                          //     textEditingController: widget.dogBreedController,
+                          //     hintText: 'Enter dog breed',
+                          //     textInputType: TextInputType.text,
+                          //   ),
+                          // ),
+                          Expanded(
+                            child: DropdownSearch<String>(
+                              popupProps: const PopupProps.menu(
+                                showSelectedItems: true,
+                                showSearchBox: true,
                               ),
+                              items: widget.labels,
+                              dropdownDecoratorProps:
+                                  const DropDownDecoratorProps(
+                                dropdownSearchDecoration: InputDecoration(
+                                  labelText: "Dog breed",
+                                  hintText: "Select a dog breed",
+                                ),
+                              ),
+                              onChanged: handleTap,
+                              selectedItem: widget.dogBreedController.text,
                             ),
-                            onChanged: handleTap,
-                            selectedItem: widget.dogBreedController.text,
                           ),
-                        ),
-                        SizedBox(
-                          width: 100,
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 24,
-                                backgroundColor: accentColor,
-                                child: IconButton(
-                                  onPressed: () {
-                                    widget.SelectImageType();
-                                  },
-                                  icon: const Icon(
-                                    Icons.camera_alt_rounded,
-                                    color: Colors.white,
+                          SizedBox(
+                            width: 100,
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: accentColor,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      widget.SelectImageType();
+                                    },
+                                    icon: const Icon(
+                                      Icons.camera_alt_rounded,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const Text('Scan a dog')
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    //text field for dog breed
-
-                    const SizedBox(
-                      height: 24,
-                    ),
-
-                    //text field for email
-                    TextFieldInput(
-                      textEditingController: widget.colorController,
-                      hintText: 'What color is the dog',
-                      textInputType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-
-                    //text field for bio
-                    TextFieldInput(
-                      textEditingController: widget.descriptionController,
-                      hintText: 'Enter a description',
-                      textInputType: TextInputType.text,
-                      maxLines: 8,
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-
-                    //buttom for login
-                    InkWell(
-                      onTap: () {
-                        if (widget.dogBreedController.text == '' ||
-                            widget.colorController.text == '' ||
-                            widget.descriptionController.text == '') {
-                          showSnackBar('Please enter all details', context);
-                        } else {
-                          setState(() {
-                            FocusScope.of(context)
-                                .requestFocus(new FocusNode());
-                            widget.controller.animateToPage(
-                              3,
-                              duration: const Duration(milliseconds: 200),
-                              curve: Curves.ease,
-                            );
-                          });
-                        }
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: const ShapeDecoration(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(4),
-                              ),
+                                const Text('Scan a dog')
+                              ],
                             ),
-                            color: accentColor),
-                        child: widget.isLoading
-                            ? const Center(
-                                child: CircularProgressIndicator(
-                                  color: primaryColor,
-                                ),
-                              )
-                            : const Text('Enter details'),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: Container(),
-                    ),
-                  ],
+                      //text field for dog breed
+
+                      const SizedBox(
+                        height: 24,
+                      ),
+
+                      //text field for email
+                      TextFieldInput(
+                        textEditingController: widget.colorController,
+                        hintText: 'What color is the dog',
+                        textInputType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+
+                      //text field for bio
+                      TextFieldInput(
+                        textEditingController: widget.descriptionController,
+                        hintText: 'Enter a description',
+                        textInputType: TextInputType.text,
+                        maxLines: 8,
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+
+                      //buttom for login
+                      InkWell(
+                        onTap: () {
+                          if (widget.dogBreedController.text == '' ||
+                              widget.colorController.text == '' ||
+                              widget.descriptionController.text == '') {
+                            showSnackBar('Please enter all details', context);
+                          } else {
+                            setState(() {
+                              FocusScope.of(context)
+                                  .requestFocus(new FocusNode());
+                              widget.controller.animateToPage(
+                                3,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.ease,
+                              );
+                            });
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: const ShapeDecoration(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(4),
+                                ),
+                              ),
+                              color: accentColor),
+                          child: widget.isLoading
+                              ? const Center(
+                                  child: CircularProgressIndicator(
+                                    color: primaryColor,
+                                  ),
+                                )
+                              : const Text('Enter details'),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Flexible(
+                        flex: 2,
+                        child: Container(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
