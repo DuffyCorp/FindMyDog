@@ -126,7 +126,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     : const CircleAvatar(
                         radius: 64,
                         backgroundImage: NetworkImage(
-                            'https://instastatistics.com/images/default_avatar.jpg'),
+                            'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg'),
                       ),
                 Positioned(
                     bottom: -10,

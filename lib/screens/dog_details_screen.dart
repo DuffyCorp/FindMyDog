@@ -117,7 +117,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                                         child: Text(
                                           "${text} - ${result['confidence'].toStringAsFixed(2)} %",
                                           style: const TextStyle(
-                                            color: accentColor,
+                                            color: Colors.white,
                                             fontSize: 20,
                                           ),
                                         ),
@@ -143,7 +143,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                                 child: const Text(
                                   "Mix",
                                   style: TextStyle(
-                                    color: accentColor,
+                                    color: Colors.white,
                                     fontSize: 20,
                                   ),
                                 ),
@@ -163,7 +163,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                                 child: const Text(
                                   "Undefined",
                                   style: TextStyle(
-                                    color: accentColor,
+                                    color: Colors.white,
                                     fontSize: 20,
                                   ),
                                 ),

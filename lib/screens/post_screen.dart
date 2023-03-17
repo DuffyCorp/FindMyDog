@@ -4,11 +4,16 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:find_my_dog/screens/profile_screen.dart';
 import 'package:find_my_dog/utils/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 import '../resources/firestore_methods.dart';
 import '../utils/global_variables.dart';
@@ -32,6 +37,8 @@ class PostScreen extends StatefulWidget {
   @override
   State<PostScreen> createState() => _PostScreenState();
 }
+
+enum SocialMedia { facebook, twitter, email, whatsapp }
 
 class _PostScreenState extends State<PostScreen> {
   var userData = {};
@@ -109,6 +116,109 @@ class _PostScreenState extends State<PostScreen> {
     return double.parse(result.toStringAsFixed(2));
   }
 
+  Future share(SocialMedia socialPlatform) async {
+    final subject = "${widget.snap['dogStatus']} ${widget.snap['dogBreed']}";
+    final text =
+        'Help watch out for this ${widget.snap['dogStatus']} ${widget.snap['dogBreed']}\n\n It was lost on ${DateFormat.yMMMd().format(widget.snap['datePublished'].toDate())}.\n';
+
+    final urlShare = Uri.encodeComponent("${widget.snap['what3wordsLink']}");
+
+    final urls = {
+      SocialMedia.facebook:
+          'https://www.facebook.com/sharer/sharer.php?u=$urlShare&t=$text',
+      SocialMedia.twitter:
+          'https://twitter.com/intent/tweet?url=$urlShare&text=$text',
+      SocialMedia.email: 'mailto:?subject=$subject&body=$text\n\n$urlShare',
+      SocialMedia.whatsapp:
+          'https://api.whatsapp.com/send?text=$text\n\n$urlShare',
+    };
+
+    final url = urls[socialPlatform]!;
+
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print("cant launch");
+      await launch(url);
+    }
+  }
+
+  void showSocials() async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('Share post'),
+          children: [
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  Icon(Icons.facebook),
+                  Text(' Facebook'),
+                ],
+              ),
+              onPressed: () async {
+                share(SocialMedia.facebook);
+                Navigator.of(context).pop();
+              },
+            ),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  FaIcon(FontAwesomeIcons.twitter),
+                  Text(' Twitter'),
+                ],
+              ),
+              onPressed: () async {
+                share(SocialMedia.twitter);
+                Navigator.of(context).pop();
+              },
+            ),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  Icon(Icons.email),
+                  Text(' Email'),
+                ],
+              ),
+              onPressed: () async {
+                share(SocialMedia.email);
+                Navigator.of(context).pop();
+              },
+            ),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  Icon(Icons.whatsapp),
+                  Text(' Whatsapp'),
+                ],
+              ),
+              onPressed: () async {
+                share(SocialMedia.whatsapp);
+                Navigator.of(context).pop();
+              },
+            ),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text('Cancel'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   //method to get user data
   getData() async {
     setState(() {
@@ -129,6 +239,76 @@ class _PostScreenState extends State<PostScreen> {
         context,
       );
     }
+  }
+
+  void printPost() async {
+    final doc = pw.Document();
+
+    final provider =
+        await flutterImageProvider(NetworkImage(widget.snap['postUrl']));
+    print(provider);
+    doc.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              pw.Center(
+                child: pw.SizedBox(
+                  width: double.infinity,
+                  child: pw.Center(
+                    child: pw.Text(
+                      "${widget.snap['dogStatus']} Dog",
+                      style: const pw.TextStyle(fontSize: 50),
+                    ),
+                  ),
+                ),
+              ),
+              pw.Center(
+                child: pw.SizedBox(
+                  height: 400,
+                  width: double.infinity,
+                  child: pw.Image(
+                    provider,
+                    height: 400,
+                    width: 400,
+                  ),
+                ),
+              ),
+              pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.Text(
+                      "Lost ${widget.snap['dogBreed']}",
+                      style: const pw.TextStyle(fontSize: 40),
+                    ),
+                    pw.Text(
+                      "Date: ${DateFormat.yMMMd().format(widget.snap['datePublished'].toDate())}",
+                      style: const pw.TextStyle(fontSize: 30),
+                    ),
+                    pw.Text(
+                      "Color: ${widget.snap['dogColor']}",
+                      style: const pw.TextStyle(fontSize: 30),
+                    ),
+                    pw.Text(
+                      "Description: ${widget.snap['description']}",
+                      style: const pw.TextStyle(fontSize: 30),
+                    ),
+                    pw.Text(
+                      "W3W: ${widget.snap['what3words']}",
+                      style: const pw.TextStyle(fontSize: 30),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
   }
 
   @override
@@ -191,18 +371,6 @@ class _PostScreenState extends State<PostScreen> {
                                     ),
                                   ),
                                 );
-                              },
-                              onDoubleTap: () async {
-                                // await FirestoreMethods().likePost(
-                                //   (snapshot.data! as dynamic).docs[index]
-                                //       ['postId'],
-                                //   userData['uid'],
-                                //   (snapshot.data! as dynamic).docs[index]
-                                //       ['likes'],
-                                // );
-                                // setState(() {
-                                //   isLikeAnimating = true;
-                                // });
                               },
                               child: Stack(
                                 alignment: Alignment.center,
@@ -288,7 +456,8 @@ class _PostScreenState extends State<PostScreen> {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        showSnackBar('send post', context);
+                                        //showSnackBar('send post', context);
+                                        showSocials();
                                       },
                                       icon: const Icon(
                                         Icons.share_outlined,
@@ -303,8 +472,7 @@ class _PostScreenState extends State<PostScreen> {
                                                     .instance.currentUser!.uid
                                             ? IconButton(
                                                 onPressed: () {
-                                                  showSnackBar(
-                                                      'print post', context);
+                                                  printPost();
                                                 },
                                                 icon: const Icon(
                                                   Icons.print_outlined,

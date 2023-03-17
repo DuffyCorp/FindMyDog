@@ -79,6 +79,10 @@ class AuthMethods {
         res = 'The email is badly formatted';
       } else if (err.code == 'weak-password') {
         res = 'Your password should be at least 6 characters long';
+      } else if (err.code == 'email-already-exists') {
+        res = 'This email already has an account';
+      } else if (err.code == 'email-already-in-use') {
+        res = 'This email already has an account';
       }
     } catch (err) {
       res = err.toString();
@@ -94,9 +98,6 @@ class AuthMethods {
     //set default error message
     String res = "Some error occurred";
 
-    GeoFirePoint myLocation =
-        geo.point(latitude: 12.960632, longitude: 77.641603);
-
     try {
       //if inputs are not empty
       if (email.isNotEmpty || password.isNotEmpty) {
@@ -108,7 +109,7 @@ class AuthMethods {
           FirebaseFirestore.instance
               .collection('users')
               .doc(FirebaseAuth.instance.currentUser!.uid)
-              .update({'deviceToken': token, 'position': myLocation.data});
+              .update({'deviceToken': token});
         });
 
         //set success response
@@ -118,9 +119,8 @@ class AuthMethods {
         res = "Please enter all the fields";
       }
     } on FirebaseAuthException catch (err) {
-      //FINISH ALL ERROR CODES
       if (err.code == 'user-not-found') {
-        res = 'User doesnt exist';
+        res = 'User does not exist';
       } else if (err.code == 'wrong-password') {
         res = 'Password is incorrect';
       }

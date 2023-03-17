@@ -17,6 +17,7 @@ class Post {
   final String profImage;
   final String what3words;
   final String what3wordsLink;
+  final String userEmail;
   final likes;
 
   const Post({
@@ -34,6 +35,7 @@ class Post {
     required this.profImage,
     required this.what3words,
     required this.what3wordsLink,
+    required this.userEmail,
     required this.likes,
   });
 
@@ -53,6 +55,7 @@ class Post {
         "profImage": profImage,
         "what3words": what3words,
         "what3wordsLink": what3wordsLink,
+        "userEmail": userEmail,
         "likes": likes,
       };
 
@@ -77,6 +80,7 @@ class Post {
       profImage: snapshot['profImage'],
       what3words: snapshot['what3words'],
       what3wordsLink: snapshot['what3wordsLink'],
+      userEmail: snapshot['userEmail'],
       likes: snapshot['likes'],
     );
   }

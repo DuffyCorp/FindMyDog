@@ -86,12 +86,6 @@ class _LoginScreenState extends State<LoginScreen> {
               flex: 2,
             ),
 
-            // //Svg image
-            // SvgPicture.asset(
-            //   'assets/images/instagram.svg',
-            //   color: primaryColor,
-            //   height: 64,
-            // ),
             const Text("Find My Dog"),
             const SizedBox(height: 64),
 
@@ -120,13 +114,6 @@ class _LoginScreenState extends State<LoginScreen> {
             InkWell(
               onTap: loginUser,
               child: Container(
-                child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: primaryColor,
-                        ),
-                      )
-                    : const Text('Log in'),
                 width: double.infinity,
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -137,14 +124,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     color: blueColor),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: primaryColor,
+                        ),
+                      )
+                    : const Text('Log in'),
               ),
             ),
             const SizedBox(
               height: 12,
             ),
             Flexible(
-              child: Container(),
               flex: 2,
+              child: Container(),
             ),
 
             //transition to sign up
@@ -160,12 +154,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 GestureDetector(
                   onTap: navigateToSignup,
                   child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                    ),
                     child: const Text(
                       "Sign up.",
                       style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
                     ),
                   ),
                 ),

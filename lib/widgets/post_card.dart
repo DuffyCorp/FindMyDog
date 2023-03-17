@@ -243,62 +243,6 @@ class _PostCardState extends State<PostCard> {
   }
 
   void printPost() async {
-    // showSnackBar('print post', context);
-
-    // final screenController = ScreenshotController();
-
-    // final bytes = await screenController.captureFromWidget(
-    //   Material(
-    //     child: Center(
-    //       child: Container(
-    //         height: 200,
-    //         width: 400,
-    //         child: GoogleMap(
-    //           tiltGesturesEnabled: false,
-    //           zoomGesturesEnabled: false,
-    //           rotateGesturesEnabled: false,
-    //           scrollGesturesEnabled: false,
-    //           mapType: MapType.normal,
-    //           zoomControlsEnabled: false,
-    //           markers: {
-    //             Marker(
-    //               infoWindow: InfoWindow(
-    //                   title:
-    //                       '${widget.snap['dogStatus']} ${widget.snap['dogBreed']}'),
-    //               markerId: const MarkerId("dogLocation"),
-    //               icon: widget.snap['dogStatus'] == 'Lost'
-    //                   ? BitmapDescriptor.defaultMarkerWithHue(
-    //                       BitmapDescriptor.hueOrange)
-    //                   : widget.snap['dogStatus'] == 'Found'
-    //                       ? BitmapDescriptor.defaultMarkerWithHue(
-    //                           BitmapDescriptor.hueGreen)
-    //                       : BitmapDescriptor.defaultMarker,
-    //               position: LatLng(
-    //                 position!.latitude,
-    //                 position!.longitude,
-    //               ),
-    //             )
-    //           },
-    //           initialCameraPosition: CameraPosition(
-    //             target: LatLng(
-    //               position!.latitude,
-    //               position!.longitude,
-    //             ),
-    //             zoom: 13,
-    //           ),
-    //           onMapCreated: (GoogleMapController controller) {
-    //             _controller.complete(controller);
-    //           },
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
-
-    // final mapProvider = await flutterImageProvider(MemoryImage(bytes));
-
-    // print(mapProvider);
-
     final doc = pw.Document();
 
     final provider =
@@ -358,17 +302,6 @@ class _PostCardState extends State<PostCard> {
                   ],
                 ),
               ),
-              // pw.Center(
-              //   child: pw.SizedBox(
-              //     height: 400,
-              //     width: double.infinity,
-              //     child: pw.Image(
-              //       mapProvider,
-              //       height: 200,
-              //       width: 400,
-              //     ),
-              //   ),
-              // ),
             ],
           );
         },

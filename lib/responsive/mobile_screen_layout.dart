@@ -408,15 +408,6 @@ class _MobileScreenLayout extends State<MobileScreenLayout> {
                 color: _page == 4 ? accentColor : Colors.grey,
               ),
             ),
-            //IconButton(
-            //  onPressed: () {
-            //    navigationTapped(5);
-            //  },
-            //  icon: Icon(
-            //    Icons.scanner,
-            //    color: _page == 5 ? accentColor : Colors.grey,
-            //  ),
-            //),
           ],
         ),
       ),

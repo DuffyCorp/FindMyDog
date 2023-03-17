@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:find_my_dog/models/user.dart';
@@ -51,14 +54,32 @@ class _NewDogAccountScreenState extends State<NewDogAccountScreen> {
   late File _image;
   late List _results;
   bool imageSelect = false;
+  List<String> labels = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadLabels();
     loadModel();
     //initWithLocalModel();
     controller = PageController();
+  }
+
+  void loadLabels() async {
+    LineSplitter lineSplitter = const LineSplitter();
+
+    final loadedLabels = await rootBundle.loadString("assets/labels.txt");
+
+    String noNumbers = loadedLabels.replaceAll(RegExp(r"\d+"), "");
+
+    List<String> convertedLabels = lineSplitter.convert(noNumbers);
+
+    convertedLabels.addAll(["Mix", "Undefined"]);
+
+    setState(() {
+      labels = convertedLabels;
+    });
   }
 
   Future loadModel() async {
@@ -242,6 +263,13 @@ class _NewDogAccountScreenState extends State<NewDogAccountScreen> {
   @override
   Widget build(BuildContext context) {
     final User user = Provider.of<UserProvider>(context).getUser;
+
+    void handleTap(value) {
+      setState(() {
+        _breedController.text = value;
+      });
+    }
+
     return Stack(
       children: [
         PageView(
@@ -302,10 +330,12 @@ class _NewDogAccountScreenState extends State<NewDogAccountScreen> {
                                 children: (imageSelect)
                                     ? _results.map(
                                         (result) {
+                                          String text = result['label']
+                                              .toString()
+                                              .replaceAll(RegExp(r"\d+"), "");
                                           return InkWell(
                                             onTap: () {
-                                              _breedController.text =
-                                                  "${result['label']}";
+                                              _breedController.text = text;
                                               setState(() {
                                                 scanning = '';
                                               });
@@ -314,9 +344,9 @@ class _NewDogAccountScreenState extends State<NewDogAccountScreen> {
                                               child: Container(
                                                 margin: EdgeInsets.all(10),
                                                 child: Text(
-                                                  "${result['label']} - ${result['confidence'].toStringAsFixed(2)} %",
+                                                  "${text} - ${result['confidence'].toStringAsFixed(2)} %",
                                                   style: const TextStyle(
-                                                    color: accentColor,
+                                                    color: Colors.white,
                                                     fontSize: 20,
                                                   ),
                                                 ),
@@ -342,7 +372,7 @@ class _NewDogAccountScreenState extends State<NewDogAccountScreen> {
                                         child: const Text(
                                           "Mix",
                                           style: TextStyle(
-                                            color: accentColor,
+                                            color: Colors.white,
                                             fontSize: 20,
                                           ),
                                         ),
@@ -362,7 +392,7 @@ class _NewDogAccountScreenState extends State<NewDogAccountScreen> {
                                         child: const Text(
                                           "Undefined",
                                           style: TextStyle(
-                                            color: accentColor,
+                                            color: Colors.white,
                                             fontSize: 20,
                                           ),
                                         ),
@@ -404,11 +434,29 @@ class _NewDogAccountScreenState extends State<NewDogAccountScreen> {
                             ),
                             Row(
                               children: [
+                                // Expanded(
+                                //   child: TextFieldInput(
+                                //     textEditingController: _breedController,
+                                //     hintText: 'Enter dog breed',
+                                //     textInputType: TextInputType.text,
+                                //   ),
+                                // ),
                                 Expanded(
-                                  child: TextFieldInput(
-                                    textEditingController: _breedController,
-                                    hintText: 'Enter dog breed',
-                                    textInputType: TextInputType.text,
+                                  child: DropdownSearch<String>(
+                                    popupProps: const PopupProps.menu(
+                                      showSelectedItems: true,
+                                      showSearchBox: true,
+                                    ),
+                                    items: labels,
+                                    dropdownDecoratorProps:
+                                        const DropDownDecoratorProps(
+                                      dropdownSearchDecoration: InputDecoration(
+                                        labelText: "Dog breed",
+                                        hintText: "Select a dog breed",
+                                      ),
+                                    ),
+                                    onChanged: handleTap,
+                                    selectedItem: _breedController.text,
                                   ),
                                 ),
                                 SizedBox(

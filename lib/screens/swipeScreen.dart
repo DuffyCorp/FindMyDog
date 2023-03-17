@@ -168,21 +168,6 @@ class _SwipeScreenState extends State<SwipeScreen>
     _colorController.dispose();
   }
 
-  // Future initWithLocalModel() async {
-  //   final _model = await FirebaseModelDownloader.instance
-  //       .getModel("Dog-Breeds", FirebaseModelDownloadType.latestModel);
-
-  //   final localModelPath = _model.file;
-
-  //   print(localModelPath.toString());
-
-  //   Tflite.close();
-  //   String res;
-  //   res = (await Tflite.loadModel(
-  //       model: localModelPath.toString(), labels: "assets/labels.txt"))!;
-  //   print("Remote Models Loading status: ${res}");
-  // }
-
   Future loadModel() async {
     Tflite.close();
     String res;

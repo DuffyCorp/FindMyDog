@@ -175,10 +175,10 @@ class _FeedScreenState extends State<FeedScreen>
           : StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('posts')
-                  //.where(
-                  //  'uid',
-                  //  isNotEqualTo: FirebaseAuth.instance.currentUser!.uid,
-                  //)
+                  // .where(
+                  //   'uid',
+                  //   isNotEqualTo: FirebaseAuth.instance.currentUser!.uid,
+                  // )
                   .orderBy(
                     'dogLocation',
                     descending: true,

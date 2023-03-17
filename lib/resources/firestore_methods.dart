@@ -43,20 +43,6 @@ class FirestoreMethods {
   Future<List<DocumentSnapshot<Object?>>> getNearbyUsers(
     LatLng centerPoint,
   ) async {
-    // GeoFirePoint center = geo.point(
-    //     latitude: centerPoint.latitude, longitude: centerPoint.longitude);
-
-    // var collectionReference = _firestore.collection('users');
-
-    // // 5 miles in km a.k.a 8km
-    // double radius = 8;
-    // String field = 'position';
-
-    // Stream<List<DocumentSnapshot<Object?>>> users = geo
-    //     .collection(collectionRef: collectionReference)
-    //     .within(center: center, radius: radius, field: field, strictMode: true);
-
-    // return users;
     List<DocumentSnapshot<Object?>> ret = [];
 
     GeoFirePoint center = geo.point(
@@ -164,10 +150,12 @@ class FirestoreMethods {
       GeoFirePoint postLocation = geo.point(
           latitude: dogLocation.latitude, longitude: dogLocation.longitude);
 
+      String finalBreed = dogBreed.replaceFirst(RegExp(r' '), '');
+
       //create post
       Post post = Post(
         dogStatus: dogStatus,
-        dogBreed: dogBreed,
+        dogBreed: finalBreed,
         dogColor: dogColor,
         description: description,
         dogLocation: postLocation.data,
@@ -180,8 +168,13 @@ class FirestoreMethods {
         profImage: profImage,
         what3words: words.data()?.toJson()["words"],
         what3wordsLink: words.data()?.toJson()["map"],
+        userEmail: _auth.currentUser!.email!,
         likes: [],
       );
+
+      print("Sending notif");
+
+      sendNotifNearByAll(dogLocation, postId, finalBreed, dogStatus);
 
       //Add post to database
       _firestore.collection('posts').doc(postId).set(
@@ -189,14 +182,13 @@ class FirestoreMethods {
           );
 
       res = "success";
-
-      sendNotifNearByAll(dogLocation, postId);
     } catch (err) {
       res = err.toString();
     }
     return res;
   }
 
+  //Calculate the distance between 2 coordinates
   double calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -206,28 +198,70 @@ class FirestoreMethods {
     return 12742 * asin(sqrt(a));
   }
 
-  void sendNotifNearByAll(LatLng centerPoint, String ID) async {
+  void sendNotifNearByAll(
+      LatLng centerPoint, String ID, String dogBreed, String dogStatus) async {
     try {
+      //Get a list of near by users
       List<DocumentSnapshot<Object?>> users = await getNearbyUsers(centerPoint);
 
-      users.forEach((DocumentSnapshot document) {
+      //Iterate through users
+      users.forEach((DocumentSnapshot document) async {
+        //Convert data to Json
         final data = document.data() as Map<String, dynamic>;
 
+        //Check if the user is not the current user
         if (data["uid"] != _auth.currentUser!.uid) {
+          //Check if the target user is currently signed into a device
           if (data["deviceToken"].toString() != "unavailable") {
-            final String name = data["username"];
+            //If the reported dog is found filter the users further for potential owners
+            if (dogStatus == "Found") {
+              //get a list of the target users registered dogs
+              QuerySnapshot snap = await _firestore
+                  .collection("users")
+                  .doc(data["uid"])
+                  .collection("dogs")
+                  .get();
 
-            var notifData = {
-              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              'id': '1',
-              'status': 'done',
-              'screen': 'post',
-              'uid': ID,
-            };
-            sendPushMessage(data["deviceToken"], "Lost Dog Near by",
-                'Find My Dog', notifData);
-          } else {
-            //SEND TEXT
+              //Iterate through each dog account
+              snap.docs.forEach((dogDocument) {
+                //Convert dog data to JSON
+                final dogData = dogDocument.data() as Map<String, dynamic>;
+
+                //Check if current dog is the same breed as the reported
+                if (dogData["dogBreed"] == dogBreed) {
+                  //Potential owner so send notification
+                  final String name = data["username"];
+
+                  //Create notification data
+                  var notifData = {
+                    'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                    'id': '1',
+                    'status': 'done',
+                    'screen': 'post',
+                    'uid': ID,
+                  };
+
+                  //Send the notification
+                  sendPushMessage(data["deviceToken"], "Lost Dog Near by",
+                      'Find My Dog', notifData);
+                } else {
+                  //For Lost and Stolen dogs send notification to all near by users
+
+                  //Create notification data
+                  var notifData = {
+                    'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                    'id': '1',
+                    'status': 'done',
+                    'screen': 'post',
+                    'uid': ID,
+                  };
+
+                  //Send notification
+                  sendPushMessage(data["deviceToken"], "$dogStatus Dog Near by",
+                      'Find My Dog', notifData);
+                }
+              });
+            }
           }
         }
       });
