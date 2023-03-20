@@ -252,31 +252,31 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
       for (TextLine line in block.lines) {
         // Same getters as TextBlock
         String? temp = "";
-        for (TextElement element in line.elements) {
-          if (isEmail) {
-            print(element.text);
-            final regEx =
-                RegExp(mailPattern, multiLine: true, caseSensitive: false);
-            var matches = regEx.firstMatch(element.text);
+        print("TESTING OCR");
+        print(line.text);
+        if (isEmail) {
+          print(line.text);
+          final regEx =
+              RegExp(mailPattern, multiLine: true, caseSensitive: false);
+          var matches = regEx.firstMatch(line.text);
 
-            temp = matches?.group(0);
-          } else {
-            temp = element.text.replaceAll(RegExp(r'[^0-9]'), '');
-          }
-          if (temp != null) {
-            if (temp.length > 1) {
-              if (isEmail) {
+          temp = matches?.group(0);
+        } else {
+          temp = line.text.replaceAll(RegExp(r'[^0-9]'), '');
+        }
+        if (temp != null) {
+          if (temp.length > 1) {
+            if (isEmail) {
+              results.add(temp);
+
+              textFromPic = textFromPic + temp + '\n';
+            } else {
+              if (validateMobile(temp)) {
+                temp = "$temp";
+
                 results.add(temp);
 
                 textFromPic = textFromPic + temp + '\n';
-              } else {
-                if (validateMobile(temp)) {
-                  temp = "$temp";
-
-                  results.add(temp);
-
-                  textFromPic = textFromPic + temp + '\n';
-                }
               }
             }
           }
