@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
-import '../dataModels/user_location.dart';
 
 class LocationProvider {
   late Location _location;

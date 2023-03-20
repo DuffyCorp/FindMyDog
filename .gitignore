@@ -67,3 +67,12 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+
+model.tflite
+
+./model.tflite
+
+
+.env
+
+/.env
