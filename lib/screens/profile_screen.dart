@@ -191,17 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         FirebaseAuth.instance.currentUser!
                                                     .uid ==
                                                 uid
-                                            ? FollowButton(
-                                                backgroundColor:
-                                                    mobileBackgroundColor,
-                                                borderColor: Colors.grey,
-                                                text: 'Edit Profile',
-                                                textColor: primaryColor,
-                                                function: () async {
-                                                  showSnackBar(
-                                                      'edit profile', context);
-                                                },
-                                              )
+                                            ? const SizedBox()
                                             : isFollowing
                                                 ? FollowButton(
                                                     backgroundColor:
