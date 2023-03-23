@@ -115,7 +115,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                                       child: Container(
                                         margin: EdgeInsets.all(10),
                                         child: Text(
-                                          "${text} - ${result['confidence'].toStringAsFixed(2)} %",
+                                          "${text} - ${(num.parse(result['confidence'].toStringAsFixed(2)) * 100).toInt()} %",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 20,
