@@ -27,34 +27,34 @@ class SettingScreen extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           children: [
             //App settings
-            const Text('App Settings'),
+            // const Text('App Settings'),
 
-            InkWell(
-              onTap: () async {},
-              child: const SettingsOption(
-                text: 'Language',
-                icon: Icon(Icons.language),
-              ),
-            ),
-            InkWell(
-              onTap: () async {},
-              child: const SettingsOption(
-                text: 'Theme',
-                icon: Icon(Icons.dark_mode),
-              ),
-            ),
+            // InkWell(
+            //   onTap: () async {},
+            //   child: const SettingsOption(
+            //     text: 'Language',
+            //     icon: Icon(Icons.language),
+            //   ),
+            // ),
+            // InkWell(
+            //   onTap: () async {},
+            //   child: const SettingsOption(
+            //     text: 'Theme',
+            //     icon: Icon(Icons.dark_mode),
+            //   ),
+            // ),
 
-            InkWell(
-              onTap: () async {},
-              child: const SettingsOption(
-                text: 'Notifications',
-                icon: Icon(Icons.notifications),
-              ),
-            ),
+            // InkWell(
+            //   onTap: () async {},
+            //   child: const SettingsOption(
+            //     text: 'Notifications',
+            //     icon: Icon(Icons.notifications),
+            //   ),
+            // ),
 
-            const Divider(
-              color: Colors.grey,
-            ),
+            // const Divider(
+            //   color: Colors.grey,
+            // ),
 
             //User settings
             const Text('User Settings'),
@@ -72,13 +72,13 @@ class SettingScreen extends StatelessWidget {
                 icon: Icon(Icons.logout),
               ),
             ),
-            InkWell(
-              onTap: () async {},
-              child: const SettingsOption(
-                text: 'Change email',
-                icon: Icon(Icons.email),
-              ),
-            ),
+            // InkWell(
+            //   onTap: () async {},
+            //   child: const SettingsOption(
+            //     text: 'Change email',
+            //     icon: Icon(Icons.email),
+            //   ),
+            // ),
             InkWell(
               onTap: () async {
                 showDialog(
@@ -125,23 +125,23 @@ class SettingScreen extends StatelessWidget {
             ),
 
             //Feedback
-            const Text('Feedback'),
-            InkWell(
-              onTap: () async {},
-              child: const SettingsOption(
-                text: 'Report a bug',
-                icon: Icon(Icons.email),
-              ),
-            ),
-            InkWell(
-              onTap: () async {},
-              child: const SettingsOption(
-                text: 'Send Feedback',
-                icon: Icon(
-                  Icons.thumb_up,
-                ),
-              ),
-            ),
+            // const Text('Feedback'),
+            // InkWell(
+            //   onTap: () async {},
+            //   child: const SettingsOption(
+            //     text: 'Report a bug',
+            //     icon: Icon(Icons.email),
+            //   ),
+            // ),
+            // InkWell(
+            //   onTap: () async {},
+            //   child: const SettingsOption(
+            //     text: 'Send Feedback',
+            //     icon: Icon(
+            //       Icons.thumb_up,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
