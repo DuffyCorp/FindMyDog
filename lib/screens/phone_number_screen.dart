@@ -535,7 +535,7 @@ table.body .article {
                   });
                 },
               ),
-              title: const Text('Scanning phone number'),
+              title: const Text('Scanning'),
               centerTitle: false,
             ),
             //Show image
@@ -560,15 +560,6 @@ table.body .article {
                         ),
                       ),
                 //Show ML model results that are clickable
-                // SingleChildScrollView(
-                //   child: Container(
-                //     child: textScanning
-                //         ? const CircularProgressIndicator(
-                //             color: primaryColor,
-                //           )
-                //         : Text(scannedText),
-                //   ),
-                // ),
                 SingleChildScrollView(
                   child: Column(
                     children: results.length > 0

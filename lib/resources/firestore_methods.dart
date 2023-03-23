@@ -244,23 +244,23 @@ class FirestoreMethods {
                   //Send the notification
                   sendPushMessage(data["deviceToken"], "Lost Dog Near by",
                       'Find My Dog', notifData);
-                } else {
-                  //For Lost and Stolen dogs send notification to all near by users
-
-                  //Create notification data
-                  var notifData = {
-                    'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                    'id': '1',
-                    'status': 'done',
-                    'screen': 'post',
-                    'uid': ID,
-                  };
-
-                  //Send notification
-                  sendPushMessage(data["deviceToken"], "$dogStatus Dog Near by",
-                      'Find My Dog', notifData);
                 }
               });
+            } else {
+              //For Lost and Stolen dogs send notification to all near by users
+              // print(data["uid"]);
+              //Create notification data
+              var notifData = {
+                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                'id': '1',
+                'status': 'done',
+                'screen': 'post',
+                'uid': ID,
+              };
+
+              //Send notification
+              sendPushMessage(data["deviceToken"], "$dogStatus Dog Near by",
+                  'Find My Dog', notifData);
             }
           }
         }
