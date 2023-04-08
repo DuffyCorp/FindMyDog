@@ -127,6 +127,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
     final userId = 'uxtrAGfSJHsVEvQyx';
 
     final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+
     final response = await http.post(
       url,
       headers: {
@@ -170,7 +171,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
         context: context,
         builder: (context) {
           return SimpleDialog(
-            title: const Text('Scan a dog'),
+            title: const Text('Scan an image'),
             children: [
               SimpleDialogOption(
                 padding: EdgeInsets.all(20),
